@@ -124,7 +124,6 @@ class ResponsiveDrawer extends React.Component {
           const getPublicState = async () => {
             try {
                 const accountState = await WavesKeeper.publicState();
-                console.log(accountState);
                 const userAddress = accountState.account.address;
                 const userName = accountState.account.name;
                 const userBalance = accountState.account.balance.available;
@@ -153,28 +152,6 @@ class ResponsiveDrawer extends React.Component {
                 db.set(fireuser).then(function() {
                   console.log(fireuser)
                 });
-
-                // function makeWaves(num){
-                //   num = String(num);
-                //   let separeted = '';
-                //   let nums = num.split('');
-                //   let len = nums.length;
-
-                //   for (let i = 0; i < len; i++){
-                //     separeted = nums[(len-1)-i] + separeted;
-
-                //     if(i === 7 && len > 9) {
-                //       separeted = '.' + separeted;
-                //     }
-                //   }
-
-                //   let waves = separeted + " WAVES"
-                //   return waves;
-                // }
-                // const wv = makeWaves(this.state.userBalance)
-                // this.setState({
-                //   balanceWaves: wv
-                // });
             } catch(error) {
                 console.error(error); // displaying the result in the console
                 /*... processing errors */
@@ -191,6 +168,14 @@ class ResponsiveDrawer extends React.Component {
     } else {
         alert("To Auth WavesKeeper should be installed.");
     }
+  }
+
+  constructor(props){
+    super(props);
+    this.authFunc = this.authFunc.bind(this);
+    this.renderLoginComponent = this.renderLoginComponent.bind(this);
+    this.renderLoginedComponent = this.renderLoginedComponent.bind(this);
+    this.shareDialogToggle = this.shareDialogToggle.bind(this);
   }
 
   authFunc(){

@@ -14,6 +14,8 @@ import * as waves from '../config/waves-config';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 
+import TextField from '@material-ui/core/TextField';
+
 import 'date-fns';
 import Grid from '@material-ui/core/Grid';
 import DateFnsUtils from '@date-io/date-fns';
@@ -225,14 +227,25 @@ class RoomCreate extends Component {
 
         <form autoComplete="off">
             <FormControl className={classes.formControl}>
-                <InputLabel shrink>City - the city where you'll be -</InputLabel>
-                <Input required value={this.state.city}  type='text' placeholder='input in English please...' name='city' onChange={this.handleChange} />
+                <TextField
+                    id="city"
+                    name="city"
+                    label="City name you want informations"
+                    className={classes.textField}
+                    value={this.state.city}
+                    onChange={this.handleChange}
+                    margin="normal"
+                    variant="outlined"
+                    type="text"
+                    required="true"
+                />
             </FormControl>
 
             <FormControl className={classes.formControl}>
-                <InputLabel htmlFor="genre-select">Genre - genre of the data you need -</InputLabel>
+                <InputLabel htmlFor="genre-select">Genre of information you'll require</InputLabel>
                 <Select
-                    required
+                    required="true"
+                    variant="outlined"
                     value={this.state.genre}
                     onChange={this.handleChange}
                     className={classes.textLeft}
@@ -259,12 +272,12 @@ class RoomCreate extends Component {
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
                     <KeyboardDatePicker
                         disableToolbar
-                        variant="inline"
+                        variant="outlined"
                         format="MM/dd/yyyy"
                         margin="normal"
                         id="when"
                         label="When will you use imformation?"
-                        value={this.state.start}
+                        value={this.state.when}
                         name="when"
                         onChange={this.handleChange}
                         KeyboardButtonProps={{
@@ -276,28 +289,67 @@ class RoomCreate extends Component {
             </FormControl>
 
             <FormControl className={classes.formControl}>
-                <InputLabel shrink>Room Title - Catch phrase to attract proposers to your Room -</InputLabel>
-                <Input required value={this.state.title}  type='text' placeholder='input in English please...' name='title' onChange={this.handleChange} />
+                <TextField
+                    id="title"
+                    name="title"
+                    label="Request title"
+                    className={classes.textField}
+                    value={this.state.title}
+                    onChange={this.handleChange}
+                    margin="normal"
+                    variant="outlined"
+                    type="text"
+                    required="true"
+                />
             </FormControl>
 
             <FormControl className={classes.formControl}>
-                <InputLabel shrink>Room Description - detail of your request -</InputLabel>
-                <Input required value={this.state.detail}  type='text' placeholder='input in English please...' name='detail' onChange={this.handleChange} />
+                <TextField
+                    id="detail"
+                    name="detail"
+                    label="Request description"
+                    className={classes.textField}
+                    value={this.state.detail}
+                    onChange={this.handleChange}
+                    margin="normal"
+                    variant="outlined"
+                    multiline="true"
+                    rows="7"
+                    type="text"
+                    required="true"
+                />
             </FormControl>
 
             <FormControl className={classes.formControl}>
-                <InputLabel shrink>Room Prize</InputLabel>
-                <Input required value={this.state.prize}  type='number' placeholder='WAVES' name='prize' onChange={this.handleChange} />
+                <TextField
+                    id="prize"
+                    name="prize"
+                    label="Amount of Prize (WAVES)"
+                    className={classes.prize}
+                    value={this.state.prize}
+                    onChange={this.handleChange}
+                    margin="normal"
+                    variant="outlined"
+                    type="number"
+                    placeholder="WAVES"
+                    required="true"
+                />
             </FormControl>
 
             <FormControl className={classes.formControl}>
-                <InputLabel shrink>Duration to deadline - days -</InputLabel>
-                <Input required value={this.state.duration_d}  type='number' placeholder='days' name='duration_d' onChange={this.handleChange} />
-            </FormControl>
-
-            <FormControl className={classes.formControl}>
-                <InputLabel shrink>Duration to deadline - hours -</InputLabel>
-                <Input required value={this.state.duration_h}  type='number' placeholder='hours' name='duration_h' onChange={this.handleChange} />
+                <TextField
+                    id="duration_d"
+                    name="duration_d"
+                    label="Duration to application period (DAYS)"
+                    className={classes.textField}
+                    value={this.state.duration_d}
+                    onChange={this.handleChange}
+                    margin="normal"
+                    variant="outlined"
+                    type="number"
+                    placeholder="days"
+                    required="true"
+                />
             </FormControl>
         </form>
 

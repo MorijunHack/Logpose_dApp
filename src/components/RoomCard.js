@@ -55,18 +55,22 @@ const styles = {
 };
 
 class RoomCard extends Component {
-
-  constructor(props){
-    super(props);
+  componentWillMount(){
+    console.log(this.props);
     this.setState({
       city: this.props.city,
       title: this.props.title,
       genre: this.props.genre,
       prize: this.props.prize,
-      limit: this.props.limit,
+      limit: this.props.limit.second,
       proposer: "/room/" + this.props.roomKey + "/proposer",
       show: "/room/" + this.props.roomKey
     });
+    console.log(this.state);
+  }
+
+  constructor(props){
+    super(props);
   }
 
   render(){

@@ -10,21 +10,54 @@ import InputLabel from '@material-ui/core/InputLabel';
 // import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from 'react-select';
+import { Card, CardContent, CardActions, Typography, Avatar, Button } from '@material-ui/core';
 
-// コンポーネントを引き出す
-import RoomCard from '../components/RoomCard'
+import SendIcon from '@material-ui/icons/Send';
 
-// Redux関連
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import * as actions from '../actions';
+import { Link } from 'react-router-dom';
+
+// // Redux関連
+// import { connect } from 'react-redux';
+// import { bindActionCreators } from 'redux';
+// import * as actions from '../actions';
 
 
 // スタイル
 const styles = theme => ({
-  titleImage: {
+  // Cards
+  card: {
+    width: 330,
+    margin: 10,
+  },
+  empty: {
+    width: 330,
+    height: 0,
+    margin: 0,
+    padding: 0,
+  },
+  bullet: {
+    display: 'inline-block',
+    margin: '0 2px',
+    transform: 'scale(0.8)',
+  },
+  title: {
+    fontSize: 14,
+  },
+  
+  // Avatar Icons
+  avatar: {
+    margin: 10,
+  },
+  wwwAvatar: {
+    margin: 10,
+    backgroundColor: '#6c1df2',
+    padding: 7,
+    boxSizing: 'border-box',
+  },
+  row: {
     width: '100%',
-    maxWidth: 350,
+    display: 'flex',
+    justifyContent: 'center',
   },
   
   button: {
@@ -42,20 +75,31 @@ const styles = theme => ({
   },
   root: {
   },
+  cards: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    justifyContent: 'space-around',
+  },
 
   // Form
   formControl: {
     margin: theme.spacing.unit,
     minWidth: 120,
   },
+
+  titleImage: {
+    width: '30%',
+    maxWidth: '200px',
+    margin: '50px auto'
+  }
 });
 
 class MyRooms extends Component {
     componentWillMount(){
         this.setState({
-            invalid: false,
+            invalid: true,
             address: '',
-            data: []
+            datas: []
         });
 
         const { WavesKeeper } = window;
@@ -67,13 +111,16 @@ class MyRooms extends Component {
                 const address = state.account.address;
 
                 if (address === idUrl) {
-                    this.setState({address: address});
+                    this.setState({
+                      address: address,
+                      invalid: false
+                    });
                     console.log(address);
 
                     const data = [];
 
                     const docRef = firebase.firestore().collection("users").doc(this.state.address).collection("rooms");
-                    docRef
+                    await docRef
                         .where("roomerAddress", "==", this.state.address)
                         .orderBy("limit", "desc")
                         .orderBy("created", "desc")
@@ -81,18 +128,15 @@ class MyRooms extends Component {
                         .then(function(querySnapshot) {
                             querySnapshot.forEach(function(doc) {
                                 console.log(doc.id, " => ", doc.data());
-                                data.push(doc);
+                                data.push(doc.data());
                             });
                             console.log(data)
                         })
                         .catch(function(error) {
                             console.log("Error getting documents: ", error);
                         });
-                    console.log(data);
-                    
-                    console.log(this.state.data)
-                } else {
-                    this.setState({invalid: true});
+                    this.setState({datas: data});
+                    console.log(this.state.datas)
                 }
             }catch(error){
                 console.error(error);
@@ -101,31 +145,90 @@ class MyRooms extends Component {
         initState();
         
     }
+
+    constructor (props){
+      super(props);
+      // this.renderValidComponent = this.renderValidComponent.bind(this);
+      this.renderInvalidComponent = this.renderInvalidComponent.bind(this);
+    }
+
+    renderInvalidComponent(classes) {
+      return (
+        <div>
+          <h2>Your access is denied.</h2>
+        </div>
+      );
+    }
   
   render() {
-
-    // redux関連
-    const { actions } = this.props;
-    // const { selectedOption } = this.state.selectedOption;
     
     // Material-ui関連
     const { classes } = this.props;
 
+    function proposer(address){
+      return (
+        "/room/" + address + "/proposer"
+      );
+    }
+
+    function shower(address) {
+      return (
+        "/room/" + address
+      )
+    }
+
     return (
-      <div>
+      <div className={classes.root}>
+        {this.state.invalid &&
+          this.renderInvalidComponent(classes)
+        }
+
         <img src="/images/Logpose_blueTitle.png" alt="title" className={classes.titleImage}/>
-        {/* <form autoComplete="off">
-          <FormControl className={classes.formControl}>
-            <InputLabel shrink>都市名</InputLabel>
-            <Select
-              value={this.state.cityname}
-              onChange={this.handleChange}
-              onKeyDown={this.enterDown}
-              options={this.state.options}
-            />
-          </FormControl>
-        </form> */}
-        
+        {this.state.datas.map((data)=>{
+          return <div className={classes.cards}>
+            <Card className={classes.card}>
+              <CardContent>
+                <Typography variant="headline" component="h4">
+                  {data.title}
+                </Typography>
+                {data.city !== '' &&
+                  <Typography className={classes.title} color="textSecondary">
+                    {data.city}
+                  </Typography>
+                }
+                {data.genre !== '' &&
+                  <Typography className={classes.title} color="textSecondary">
+                    {data.genre}
+                  </Typography>
+                }
+                {data.prize !== '' &&
+                  <Typography className={classes.title} color="textSecondary">
+                    {data.prize}
+                  </Typography>
+                }
+                {data.limit !== '' &&
+                  <Typography className={classes.title} color="textSecondary">
+                    {data.limit.second}
+                  </Typography>
+                }
+              </CardContent>
+              <CardActions>
+                <div className={classes.row}>
+                  {data.roomKey !== '' &&
+                    <Link to={proposer(data.roomKey)}>
+                      <SendIcon className={classes.wwwAvatar} />
+                    </Link>
+                  }
+                  {data.roomKey !== '' &&
+                    <Link to={shower(data.roomKey)}>
+                      <Avatar className={classes.wwwAvatar} src="/images/www.svg"/>
+                    </Link>
+                  }
+                </div>
+              </CardActions>
+            </Card>
+          </div>
+        })};
       </div>
     );
   }

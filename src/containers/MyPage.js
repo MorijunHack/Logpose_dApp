@@ -20,8 +20,11 @@ import LocalActivityIcon from '@material-ui/icons/LocalActivity';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as actions from '../actions';
+
 import { Input, FormControl, InputLabel, Select, MenuItem, Button, Typography } from '@material-ui/core';
+
 import { accountDataByKey } from '@waves/waves-transactions/dist/nodeInteraction';
+import { base58Encode, sha256, stringToBytes } from '@waves/ts-lib-crypto'
 
 // スタイル
 const styles = theme => ({
@@ -31,17 +34,14 @@ const styles = theme => ({
     backgroundColor: theme.palette.background.paper,
     margin: '0 auto'
   },
-  forms: {
-    textAlign: 'right',
-  },
   waves: {
     width: '19.5px',
     height: '19.5px'
   },
-  // input: {
-  //   fontSize: '18px',
-  //   textAlign: 'right'
-  // },
+  input: {
+    fontSize: '18px',
+    textAlign: 'right'
+  },
   // text: {
   //   fontSize: '18px'
   // },
@@ -64,8 +64,8 @@ class MyPage extends Component {
       mealpolicy: '',
       sex: '',
       age: 0,
-      hoby: '',
-      area: [],
+      hobby: '',
+      area: '',
       prize: 0
     }
 
@@ -77,27 +77,53 @@ class MyPage extends Component {
           const accountState = await WavesKeeper.publicState();
           console.log(accountState);
           const userAddress = accountState.account.address;
+          const userKey = base58Encode(sha256(stringToBytes(userAddress)));
           const userName = accountState.account.name;
           const userBalance = accountState.account.balance.available;
+          
+          let mealpolicy = await accountDataByKey((userKey + "_mealpolicy"), waves.dAppAddress, waves.nodeUrl);
+          if (mealpolicy === null || mealpolicy === 'not set') {
+            mealpolicy = {value: ''}
+          };
+          
+          let sex = await accountDataByKey((userKey + "_sex"), waves.dAppAddress, waves.nodeUrl);
+          if (sex === null || sex === 'NONE'){
+            sex = {value: ''}
+          };
 
-          const mealpolicy = await accountDataByKey((userAddress + "_mealpolicy"), waves.dAppAddress, waves.nodeUrl);
-          const sex = await accountDataByKey((userAddress + "_sex"), waves.dAppAddress, waves.nodeUrl);
-          const age = await accountDataByKey((userAddress + "_age"), waves.dAppAddress, waves.nodeUrl);
-          const hobby = await accountDataByKey((userAddress + "_hobby"), waves.dAppAddress, waves.nodeUrl);
-          const area = await accountDataByKey((userAddress + "_area"), waves.dAppAddress, waves.nodeUrl);
-          const prize = await accountDataByKey((userAddress + "_balance"), waves.dAppAddress, waves.nodeUrl);
+          let age = await accountDataByKey((userKey + "_age"), waves.dAppAddress, waves.nodeUrl);
+          if (age === null || age === 'not set'){
+            age = {value: 0}
+          };
+
+          let hobby = await accountDataByKey((userKey + "_hobby"), waves.dAppAddress, waves.nodeUrl);
+          if (hobby === null || hobby === 'not set') {
+            hobby = {value: ''}
+          };
+
+          let area = await accountDataByKey((userKey + "_area"), waves.dAppAddress, waves.nodeUrl);
+          if (area === null || area === 'not set') {
+            area = {value: ''}
+          };
+
+          let prize = await accountDataByKey((userKey + "_balance"), waves.dAppAddress, waves.nodeUrl);
+          if (prize === null) {
+            prize = {value: 0}
+          };
+
+          console.log(mealpolicy)
           
           if (userAddress === id) {
             this.setState({
               name: userName,
               id: userAddress,
               balance: userBalance,
-              mealpolicy: mealpolicy,
-              sex: sex,
-              age: age,
-              hobby: hobby,
-              area: area,
-              prize: prize
+              mealpolicy: mealpolicy.value,
+              sex: sex.value,
+              age: age.value,
+              hobby: hobby.value,
+              area: area.value,
+              prize: prize.value
             });
           } else {
             this.setState({
@@ -127,6 +153,23 @@ class MyPage extends Component {
 
   async doSubmit(e){
     e.preventDefault();
+
+    if (this.state.mealpolicy === null) {
+      this.setState({mealpolicy: 'not set'})
+    }
+    if (this.state.sex === null) {
+      this.setState({sex: 'NONE'})
+    }
+    if (this.state.age === null) {
+      this.setState({age: 0})
+    }
+    if (this.state.hobby === null) {
+      this.setState({hobby: 'not set'})
+    }
+    if (this.state.area === null) {
+      this.setState({area: 'not set'})
+    }
+
     WavesKeeper.signAndPublishTransaction({
         type: 16,
         data: {
@@ -238,7 +281,7 @@ class MyPage extends Component {
                   </ListItemIcon>
                   <ListItemText primary="Age" />
                   <ListItemSecondaryAction>
-                    <Input type="number" value={this.state.age} name="age" onChange={this.doChange} className={classes.forms} />
+                    <Input type="number" value={this.state.age} name="age" onChange={this.doChange} className={classes.input} />
                   </ListItemSecondaryAction>
                 </ListItem>
 
@@ -248,7 +291,7 @@ class MyPage extends Component {
                   </ListItemIcon>
                   <ListItemText primary="Hobbies" />
                   <ListItemSecondaryAction>
-                    <Input type="text" value={this.state.hobby} name="hobby" onChange={this.doChange} className={classes.forms} />
+                    <Input type="text" value={this.state.hobby} name="hobby" onChange={this.doChange} className={classes.input} />
                   </ListItemSecondaryAction>
                 </ListItem>
 
@@ -258,12 +301,13 @@ class MyPage extends Component {
                   </ListItemIcon>
                   <ListItemText primary="Your main location" />
                   <ListItemSecondaryAction>
-                    <Input type="text" value={this.state.area} name="area" onChange={this.doChange} className={classes.forms} />
+                    <Input type="text" value={this.state.area} name="area" onChange={this.doChange} className={classes.input} />
                   </ListItemSecondaryAction>
                 </ListItem>
 
               </List>
-              <Button
+            </div>
+            <Button
                 variant="contained"
                 color="primary"
                 className={classes.button}
@@ -271,7 +315,6 @@ class MyPage extends Component {
               >
                 SaveChanges
               </Button>
-            </div>
           </div>
         }
       </div>
