@@ -35,3 +35,35 @@ async function copyToRootWithUsersRoomSnapshot(snapshot: FirebaseFirestore.Docum
   room.roomId = firestore.collection('users').doc(userId);
   await firestore.collection('rooms').doc(roomId).set(room, { merge: true });
 }
+
+
+
+interface Proposal {
+  readonly contributorAddress: string;
+  readonly propose: string;
+  readonly proposeKey: string;
+  readonly roomKey: string;
+  readonly roomerAddress: string;
+  readonly txHash: string;
+}
+
+interface  UserProposal extends Proposal {
+  proposalId?: FirebaseFirestore.DocumentReference;
+}
+
+export const onUsersRoomProposalCreate = functions.firestore.document('/users/{userId}/rooms/{roomId}/proposals/{proposalId}').onCreate(async (snapshot, context) => {
+  await copyToUsersWithUsersRoomsProposalSnapshot(snapshot, context);
+});
+export const onUsersRoomProposalUpdate = functions.firestore.document('/users/{userId}/rooms/{roomId}/proposals/{proposalId}').onUpdate(async (change, context) => {
+  await copyToUsersWithUsersRoomsProposalSnapshot(change.after, context);
+});
+
+async function copyToUsersWithUsersRoomsProposalSnapshot(snapshot: FirebaseFirestore.DocumentSnapshot, context: functions.EventContext) {
+  const proposalId = snapshot.id;
+  const userId = context.params.userId;
+  const roomId = context.params.roomId;
+  const proposal = snapshot.data() as UserProposal;
+  const proposer = proposal.contributorAddress
+  proposal.proposalId = firestore.collection('users').doc(userId).collection('rooms').doc(roomId);
+  await firestore.collection('users').doc(proposer).collection('proposals').doc(proposalId).set(proposal, { merge: true });
+}

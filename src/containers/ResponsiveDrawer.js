@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import firebase from "firebase/app";
 import 'firebase/firestore';
 
-// import * as waves from '../config/waves-config';
+import * as waves from '../config/waves-config';
 
 import { withStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
@@ -30,7 +30,6 @@ import AddCircleIcon from '@material-ui/icons/AddCircle';
 // import CardTravelIcon from '@material-ui/icons/CardTravel';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 
-
 // Route関連
 import { Link } from 'react-router-dom';
 
@@ -39,7 +38,8 @@ import ShareDialog from '../containers/ShareDialog';
 
 // コンポーネントの準備
 import ResponsiveDrawerListItem from '../components/ResponsiveDrawerListItem';
-// import { accountDataByKey } from '@waves/waves-transactions/dist/nodeInteraction';
+import { accountDataByKey } from '@waves/waves-transactions/dist/nodeInteraction';
+import { base58Encode, sha256, stringToBytes } from '@waves/ts-lib-crypto';
 
 // 設定値
 const drawerWidth = 240;
@@ -135,11 +135,15 @@ class ResponsiveDrawer extends React.Component {
                   roomPath: "/rooms/" + userAddress
                 });
 
-                const wv = userBalance / 100000000;
-                const wvBalance = wv.toFixed(8)
+                const balanceKey = base58Encode(sha256(stringToBytes(userAddress))) + "_balance";
+                let balance = await accountDataByKey(balanceKey, waves.dAppAddress, waves.nodeUrl);
+                if (balance === null) {
+                  balance = {value: 0};
+                }
+                balance = balance.value;
 
                 this.setState({
-                  balanceWaves: wvBalance + " WAVES"
+                  balanceWaves: String(balance.toFixed(8)) + " WAVES"
                 });
 
                 const fireuser = {
@@ -166,7 +170,7 @@ class ResponsiveDrawer extends React.Component {
           /*...processing errors */
       })
     } else {
-        alert("To Auth WavesKeeper should be installed.");
+        window.confirm('If you wanna use this app, install Waveskeeper!')
     }
   }
 
@@ -176,6 +180,34 @@ class ResponsiveDrawer extends React.Component {
     this.renderLoginComponent = this.renderLoginComponent.bind(this);
     this.renderLoginedComponent = this.renderLoginedComponent.bind(this);
     this.shareDialogToggle = this.shareDialogToggle.bind(this);
+    this.withdrawFunc = this.withdrawFunc.bind(this);
+  }
+
+  async withdrawFunc(){
+    const { WavesKeeper } = window;
+    WavesKeeper.signAndPublishTransaction({
+      type: 16,
+      data: {
+          fee: {
+              "tokens": "0.05",
+              "assetId": "WAVES"
+          },
+          dApp: waves.dAppAddress,
+          call: {
+                  function: 'withdraw',
+                  args: []
+              }, payment: []
+      }
+    }).then(async (tx) => {
+      const res = JSON.parse(tx);
+      const txid = res["id"];
+      console.log(txid);
+
+      alert('withdraw has done successfully! Txid : ' + txid);
+
+    }).catch((error) => {
+      console.error("Something went wrong", error);
+    });
   }
 
   authFunc(){
@@ -298,8 +330,8 @@ class ResponsiveDrawer extends React.Component {
             text="My Proposals"
           />
           <ResponsiveDrawerListItem
-            to="https://wavesexplorer.com/testnet/faucet"
-            onClick={this.closeDrawerNav}
+            to={this.state.userPath}
+            onClick={this.withdrawFunc}
             icon={<MonetizationOnIcon />}
             text={this.state.balanceWaves}
           />

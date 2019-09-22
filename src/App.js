@@ -7,9 +7,8 @@ import Home from './containers/Home';
 import Info from './containers/Info';
 import MyPage from './containers/MyPage';
 import RoomCreate from './containers/RoomCreate';
-import RoomEdit from './containers/RoomEdit';
 import MyRooms from './containers/MyRooms';
-import RoomShow from './containers/RoomShow';
+import RoomManage from './containers/RoomManage';
 import Proposer from './containers/Proposer';
 
 
@@ -43,10 +42,8 @@ class App extends Component {
             <Route exact path="/user/:id" component={WrapMainContent(MyPage)} />
             <Route exact path="/rooms/:id" component={WrapMainContent(MyRooms)}/>
             <Route exact path="/room_create" component={WrapMainContent(RoomCreate)}/>
-            <Route exact path="/room_edit" component={WrapMainContent(RoomEdit)}/>
-            <Route exact path="/room/:id" component={WrapMainContent(RoomShow)}/>
+            <Route exact path="/room/:id/auth" component={WrapMainContent(RoomManage)}/>
             <Route exact path="/room/:id/proposer" component={WrapMainContent(Proposer)}/>
-            <Route exact path="/propose" component={WrapMainContent(ProposalCreate)}/>
             <Route component={WrapMainContent(NotFound)}/>
           </Switch>
         </ResponsiveDrawer>
