@@ -129,65 +129,40 @@ class RoomManage extends Component {
           datas = datas.value;
           datas = JSON.parse(datas);
 
-          // dataの日付表記を変更
-          function fixDateTime(date) {
-            const arr = date.split('');
-            console.log(arr);
-            let arr2 = [];
-            for (let i = 0; i < 10; i++) {
-                arr2.push(arr[i]);
-            }
-            console.log(arr2);
-
-            let arr3 = [];
-            for (let j = 11; j < 16; j++) {
-                arr3.push(arr[j])
-            }
-            console.log(arr3);
-
-            arr2 = arr2.join(',');
-            arr3 = arr3.join(',');
-
-            let date2 = arr2 + ' ' + arr3;
-            date2 = date2.replace(/,/g, '');
-
-            return date2;
-          }
-
-          function fixDate(date){
-              const arr = date.split('');
-              console.log(arr);
-              let arr2 = [];
-              for (let i = 0; i < 10; i++) {
-                  arr2.push(arr[i]);
-              }
-              arr2 = arr2.join(',');
-              arr2 = arr2.replace(/,/g, '');
-
-              return arr2
-          }
-
           let city = datas.city;
           city = city.split(' - ');
 
+          let xs = {};
+
           if (datas.roomer === user) {
+            const fireNow = firebase.firestore().collection("users").doc(datas.roomer).collection("rooms").doc(roomKey)
+            await fireNow.get().then(function(doc){
+                xs.created_a = new Date(doc.data().created.seconds * 1000);
+                xs.dead_a = new Date(doc.data().dead.seconds * 1000);
+                xs.when_a = new Date(doc.data().when.seconds * 1000);
+            })
+
+            console.log(xs)
+
             this.setState({
-              author: true,
-              created: datas.created,
-              roomKey: roomKey,
-              roomer: datas.roomer,
-              country: city[2],
-              state: city[1],
-              city: city[0],
-              title: datas.title,
-              when: datas.when,
-              genre: datas.genre,
-              detail: datas.detail,
-              prize: Number(datas.prize),
-              dead: datas.dead,
-              duration: datas.duration,
-              height: datas.height
+                author: true,
+                roomKey: roomKey,
+                roomer: datas.roomer,
+                country: city[2],
+                state: city[1],
+                city: city[0],
+                title: datas.title,
+                genre: datas.genre,
+                detail: datas.detail,
+                prize: Number(datas.prize),
+                duration: datas.duration,
+                height: datas.height,
+                created: xs.created_a,
+                dead: xs.dead_a,
+                when: xs.when_a
             });
+
+            console.log(this.state);
           }
         }catch(error){
           console.error(error)
@@ -270,17 +245,14 @@ class RoomManage extends Component {
             // firestoreに書き込む
             const firedata = {
               txHash: txid,
-              roomKey: this.state.roomKey,
-              roomerAddress: this.state.roomer,
-              created: this.state.created,
               dead: this.state.dead,
-              state: 'opened'
+              when: this.state.when
             }
 
             console.log(firedata);
 
-            const db = firebase.firestore().collection('users').doc(firedata.roomerAddress).collection("rooms").doc(firedata.roomKey)
-            db.set(firedata).then(function() {
+            const db = firebase.firestore().collection('users').doc(this.state.roomer).collection("rooms").doc(this.state.roomKey)
+            db.update(firedata).then(function() {
                 alert('Room Updated Successfully! Txid:  ' + txid);
             });
         }).catch((error) => {
@@ -312,15 +284,11 @@ class RoomManage extends Component {
 
         const firedata = {
           txHash: txid,
-          roomKey: this.state.roomKey,
-          roomerAddress: this.state.roomer,
-          created: this.state.created,
-          dead: this.state.dead,
           state: 'closed'
         }
 
-        const db = firebase.firestore().collection('users').doc(firedata.roomerAddress).collection("rooms").doc(firedata.roomKey)
-              db.set(firedata).then(function() {
+        const db = firebase.firestore().collection('users').doc(this.state.roomer).collection("rooms").doc(this.state.roomKey)
+              db.update(firedata).then(function() {
                 console.log("aaaa");
               });
       }).catch((error) => {

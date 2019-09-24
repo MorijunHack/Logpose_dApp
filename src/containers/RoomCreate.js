@@ -194,7 +194,8 @@ class RoomCreate extends Component {
                 roomerAddress: data.roomer,
                 created: new Date(),
                 dead: this.state.dead,
-                state: 'opened'
+                state: 'opened',
+                when: this.state.when
             }
 
             console.log(firedata);
