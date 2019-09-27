@@ -143,7 +143,7 @@ class ResponsiveDrawer extends React.Component {
                 balance = balance.value;
 
                 this.setState({
-                  balanceWaves: String(balance.toFixed(8)) + " WAVES"
+                  balanceWaves: String((balance/100000000).toFixed(8)) + " WAVES"
                 });
 
                 const fireuser = {
@@ -324,7 +324,7 @@ class ResponsiveDrawer extends React.Component {
             text="My Rooms"
           />
           <ResponsiveDrawerListItem
-            to="/proposal"
+            to="/proposals"
             onClick={this.closeDrawerNav}
             icon={<SendIcon />}
             text="My Proposals"

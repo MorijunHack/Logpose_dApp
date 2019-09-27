@@ -11,7 +11,8 @@ const styles = theme => ({
     ...theme.mixins.gutters(),
     paddingTop: theme.spacing.unit * 2,
     paddingBottom: theme.spacing.unit * 2,
-    margin: 10,
+    margin: '20px auto',
+    width: '80%'
   },
   textLeft: {
     textAlign: 'left',

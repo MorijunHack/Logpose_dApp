@@ -111,6 +111,30 @@ class MyPage extends Component {
             prize = {value: 0}
           };
 
+          let evaluateCount = await accountDataByKey((userKey + "_evaluateCount"), waves.dAppAddress, waves.nodeUrl);
+          if (evaluateCount === null) {
+            evaluateCount = {value: 0}
+          };
+
+          let totalPoint = await accountDataByKey((userKey + "_evaluateTotal"), waves.dAppAddress, waves.nodeUrl);
+          if (totalPoint === null) {
+            totalPoint = {value: 0}
+          };
+
+          const averageEvaluation = totalPoint.value + ' / ' + evaluateCount.value
+
+          let roomCount = await accountDataByKey((userKey + "_roomCount"), waves.dAppAddress, waves.nodeUrl);
+          if (roomCount === null) {
+            roomCount = {value: 0}
+          };
+
+          let adoptCount = await accountDataByKey((userKey + "_adoptCount"), waves.dAppAddress, waves.nodeUrl);
+          if (adoptCount === null) {
+            adoptCount = {value: 0}
+          };
+
+          const adoptionRatio = roomCount.value + ' / ' + adoptCount.value
+
           console.log(mealpolicy)
           
           if (userAddress === id) {
@@ -123,7 +147,9 @@ class MyPage extends Component {
               age: age.value,
               hobby: hobby.value,
               area: area.value,
-              prize: prize.value
+              prize: prize.value,
+              averageEvaluation: averageEvaluation,
+              adoptionRatio: adoptionRatio
             });
           } else {
             this.setState({
@@ -216,6 +242,26 @@ class MyPage extends Component {
                   <ListItemText primary="Address" />
                   <ListItemSecondaryAction>
                     <Typography component="p" className={classes.text}>{this.state.id}</Typography>
+                  </ListItemSecondaryAction>
+                </ListItem>
+
+                <ListItem>
+                  <ListItemIcon>
+                    <img src="/images/waves-logo.png" alt="waves" className={classes.waves} />
+                  </ListItemIcon>
+                  <ListItemText primary="average point" />
+                  <ListItemSecondaryAction>
+                    <Typography component="p" className={classes.text}>{this.state.averageEvaluation}</Typography>
+                  </ListItemSecondaryAction>
+                </ListItem>
+
+                <ListItem>
+                  <ListItemIcon>
+                    <img src="/images/waves-logo.png" alt="waves" className={classes.waves} />
+                  </ListItemIcon>
+                  <ListItemText primary="Adoption Ratio" />
+                  <ListItemSecondaryAction>
+                    <Typography component="p" className={classes.text}>{this.state.adoptionRatio}</Typography>
                   </ListItemSecondaryAction>
                 </ListItem>
                 

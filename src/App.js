@@ -10,6 +10,7 @@ import RoomCreate from './containers/RoomCreate';
 import MyRooms from './containers/MyRooms';
 import RoomManage from './containers/RoomManage';
 import Proposer from './containers/Proposer';
+import MyProposals from './containers/MyProposals';
 
 
 // コンポーネント読み込み
@@ -40,6 +41,7 @@ class App extends Component {
             <Route exact path="/" component={WrapMainContent(Home)} />
             <Route exact path="/info" component={WrapMainContent(Info)}/>
             <Route exact path="/user/:id" component={WrapMainContent(MyPage)} />
+            <Route exact path="/proposals" component={WrapMainContent(MyProposals)} />
             <Route exact path="/rooms/:id" component={WrapMainContent(MyRooms)}/>
             <Route exact path="/room_create" component={WrapMainContent(RoomCreate)}/>
             <Route exact path="/room/:id/auth" component={WrapMainContent(RoomManage)}/>

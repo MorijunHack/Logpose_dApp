@@ -8,6 +8,9 @@ import { withStyles } from '@material-ui/core/styles';
 
 import RoomList from './RoomList';
 
+import * as waves from '../config/waves-config';
+import { accountDataByKey } from '@waves/waves-transactions/dist/nodeInteraction';
+
 
 // スタイル
 const styles = theme => ({
@@ -51,7 +54,7 @@ class Home extends Component {
               .orderBy("created")
               .get()
               .then(function(querySnapshot) {
-                  querySnapshot.forEach(function(doc) {
+                  querySnapshot.forEach(async function(doc) {
                       console.log(doc.id, " => ", doc.data());
                       data.push(doc.data());
                   });
@@ -73,6 +76,8 @@ class Home extends Component {
     
     // Material-ui関連
     const { classes } = this.props;
+
+    console.log(this.state)
 
     return (
       <div className={classes.root}>

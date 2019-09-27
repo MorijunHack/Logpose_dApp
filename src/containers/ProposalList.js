@@ -17,10 +17,11 @@ import { base58Encode, sha256, stringToBytes } from '@waves/ts-lib-crypto'
 // スタイル
 const styles = theme => ({
   root: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    justifyContent: 'space-around',
   },
+  genretitle: {
+    marginTop: '50px',
+    color: 'indigo'
+},
 });
 
 const a = [];

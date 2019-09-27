@@ -37,6 +37,9 @@ const styles = {
     display: 'flex',
     justifyContent: 'center',
   },
+  list: {
+    margin: '20px auto'
+  }
 };
 
 class RoomCard extends Component {
@@ -89,7 +92,7 @@ class RoomCard extends Component {
             {data.title}
           </Typography>
           <Typography className={classes.title} color="textSecondary">
-            <TableBody>
+            <TableBody className={classes.list}>
               {rows.map(row => (
                 <TableRow key={row.title}>
                   <TableCell component="th" scope="row" size="small">{row.title}</TableCell>
@@ -142,7 +145,7 @@ class RoomCard extends Component {
               {data.title}
             </Typography>
             <Typography className={classes.title} color="textSecondary">
-              <TableBody>
+              <TableBody className={classes.list}>
                 {rows.map(row => (
                   <TableRow key={row.title}>
                     <TableCell component="th" scope="row" size="small">{row.title}</TableCell>

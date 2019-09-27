@@ -46,27 +46,11 @@ const styles = theme => ({
         padding: 10,
         width: 250,
     },
+    title: {
+        color: 'indigo'
+    },
     areaField: {
         width: '33%',
-    },
-    leftIcon: {
-        marginRight: theme.spacing.unit,
-    },
-    rightIcon: {
-        marginLeft: theme.spacing.unit,
-    },
-    root: {
-        ...theme.mixins.gutters(),
-        paddingTop: theme.spacing.unit * 2,
-        paddingBottom: theme.spacing.unit * 2,
-        margin: 10,
-    },
-    textLeft: {
-        textAlign: 'left',
-    },
-    paragraph: {
-        marginTop: 10,
-        marginBottom: 10,
     },
 
     // Form
@@ -87,7 +71,11 @@ const styles = theme => ({
     genreSelector: {
         width: '290px',
         textAlign: 'left'
-    }
+    },
+    genretitle: {
+        marginTop: '50px',
+        color: 'indigo'
+    },
 });
 
 class RoomManage extends Component {
@@ -103,25 +91,31 @@ class RoomManage extends Component {
         const roomer = id[1];
 
         console.log(roomKey)
-
-        // this.state = {roomKey: roomKey}
-
         console.log(roomer)
 
         let lister = [];
 
         const getDatas = async () => {
             try {
-                const fireProp = firebase.firestore().collection("users").doc(roomer).collection("rooms").doc(roomKey).collection("proposals")
-                await fireProp.orderBy("created", "desc").get().then(function(querysnapshot){
-                    querysnapshot.forEach(async function(doc){
-                        console.log(doc.data());
-
-                        lister.push(doc.data())
+                const status = await accountDataByKey(roomKey + "_status", waves.dAppAddress, waves.nodeUrl);
+                if (status.value === "open"){
+                    const fireProp = firebase.firestore().collection("users").doc(roomer).collection("rooms").doc(roomKey).collection("proposals")
+                    await fireProp.orderBy("created", "desc").get().then(function(querysnapshot){
+                        querysnapshot.forEach(async function(doc){
+                            lister.push(doc.data())
+                        })
                     })
-                    console.log(lister);
-                })
-                return lister
+                    return lister
+                } else {
+                    const fireProp = firebase.firestore().collection("users").doc(roomer).collection("rooms").doc(roomKey).collection("proposals")
+                    await fireProp.where("status", "==", "adopted").get().then(function(querysnapshot){
+                        querysnapshot.forEach(async function(doc){
+                            lister.push(doc.data())
+                        })
+                    })
+                    return lister
+                }
+                
             } catch(error) {
                 console.error(error);
             }
@@ -132,8 +126,6 @@ class RoomManage extends Component {
             roomer: roomer,
             datas: getDatas()
         }
-
-        console.log(this.state)
         
         this.handleChange = this.handleChange.bind(this);
         this.handleWhenChange = this.handleWhenChange.bind(this);
@@ -152,14 +144,11 @@ class RoomManage extends Component {
         let datas = await accountDataByKey(this.state.roomKey + '_data', waves.dAppAddress, waves.nodeUrl);
         datas = datas.value;
         datas = JSON.parse(datas);
-        console.log(datas);
 
         let city = datas.city;
         city = city.split(' - ');
 
         let xs = {};
-
-        // const status = await this.state.datas
 
         if (datas.roomer === user) {
             const fireNow = firebase.firestore().collection("users").doc(this.state.roomer).collection("rooms").doc(this.state.roomKey)
@@ -185,8 +174,6 @@ class RoomManage extends Component {
                 duration: datas.duration,
                 height: datas.height
             });
-
-            console.log(this.state)
         }
     }
 
@@ -333,7 +320,7 @@ class RoomManage extends Component {
 
     return (
       <div>
-        <h1>Request Information</h1>
+        <h1 className={classes.title}>Request Information</h1>
 
         <form autoComplete="off">
             <FormControl className={classes.formControl}>
@@ -517,6 +504,7 @@ class RoomManage extends Component {
           Delete Room.
         </Button>
 
+        <h1 className={classes.genretitle}>Proposals</h1>
         <ProposalList datas={this.fixDatas(this.state.datas)} />
 
       </div>

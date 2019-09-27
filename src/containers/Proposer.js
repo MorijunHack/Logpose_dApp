@@ -133,6 +133,7 @@ class Proposer extends Component {
         const now = await currentHeight(waves.nodeUrl);
         
         const data = {
+            status: "posted",
             room: this.state.roomKey,
             roomer: this.state.roomer,
             proposer: this.state.proposer,
@@ -188,6 +189,7 @@ class Proposer extends Component {
                 const firedata = {
                     txHash: txid,
                     proposeKey: proposeKey,
+                    status: "posted",
                     roomKey: this.state.roomKey,
                     contributorAddress: contributor,
                     roomerAddress: this.state.roomer,
