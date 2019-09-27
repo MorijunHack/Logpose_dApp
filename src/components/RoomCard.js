@@ -10,6 +10,7 @@ import Avatar from '@material-ui/core/Avatar';
 // Route関連
 import { Link } from 'react-router-dom';
 import { TableBody, TableRow, TableCell } from '@material-ui/core';
+import { base58Encode, sha256, stringToBytes } from '@waves/ts-lib-crypto';
 
 
 const styles = {
@@ -58,9 +59,9 @@ class RoomCard extends Component {
   }
 
   authorFormat(data, roomKey, txHash, classes){
-    function manager(address) {
+    function manager(address, roomer) {
       return (
-        "/room/" + address + "/auth"
+        "/room/" + address + '$' + roomer + "/auth/"
       );
     }
 
@@ -104,7 +105,7 @@ class RoomCard extends Component {
               <Avatar className={classes.wwwAvatar} src="/images/search.svg"/>
             </a>
         
-            <Link to={manager(roomKey)}>
+            <Link to={manager(roomKey, data.roomer)}>
               <Avatar className={classes.wwwAvatar} src="/images/pen.svg"/>
             </Link>
           </div>

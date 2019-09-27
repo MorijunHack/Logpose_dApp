@@ -134,6 +134,8 @@ class Proposer extends Component {
         
         const data = {
             room: this.state.roomKey,
+            roomer: this.state.roomer,
+            proposer: this.state.proposer,
             title: this.state.ansTitle,
             detail: this.state.ansDetail,
             url: this.state.url,
@@ -189,7 +191,8 @@ class Proposer extends Component {
                     roomKey: this.state.roomKey,
                     contributorAddress: contributor,
                     roomerAddress: this.state.roomer,
-                    propose: {title: this.state.ansTitle, detail: this.state.ansDetail, url: this.state.url}
+                    propose: {title: this.state.ansTitle, detail: this.state.ansDetail, url: this.state.url},
+                    created: new Date()
                 }
                 console.log(firedata);
     

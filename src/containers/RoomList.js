@@ -22,6 +22,7 @@ class RoomList extends Component {
 
   constructor(props){
     super(props);
+    console.log(this.props)
     this.renderListItem = this.renderListItem.bind(this);
   }
 

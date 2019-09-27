@@ -16,7 +16,7 @@ import Select from '@material-ui/core/Select';
 
 import TextField from '@material-ui/core/TextField';
 
-import { Redirect } from 'react-router-dom';
+import ProposalList from './ProposalList';
 
 import 'date-fns';
 import Grid from '@material-ui/core/Grid';
@@ -32,6 +32,8 @@ import { base58Encode, sha256, stringToBytes } from '@waves/ts-lib-crypto'
 // waves-transactionsの取得
 import { currentHeight, accountDataByKey } from '@waves/waves-transactions/dist/nodeInteraction';
 import { Input } from '@material-ui/core';
+
+// import ProposalList from './ProposalList';
 
 
 // スタイル
@@ -92,86 +94,100 @@ class RoomManage extends Component {
 
     constructor(props){
         super(props);
-        this.state = {
-          author: 'false',
-          created: '',
-          roomKey: '',
-          roomer: '',
-          country: '',
-          state: '',
-          city: '',
-          title: '',
-          when: '',
-          genre: '',
-          detail: '',
-          prize: 0,
-          dead: '',
-          duration: 0,
-          height: 0
+        let id = this.props.match.params.id;
+        id = id.split('$');
+
+        console.log(id)
+
+        const roomKey = id[0];
+        const roomer = id[1];
+
+        console.log(roomKey)
+
+        // this.state = {roomKey: roomKey}
+
+        console.log(roomer)
+
+        let lister = [];
+
+        const getDatas = async () => {
+            try {
+                const fireProp = firebase.firestore().collection("users").doc(roomer).collection("rooms").doc(roomKey).collection("proposals")
+                await fireProp.orderBy("created", "desc").get().then(function(querysnapshot){
+                    querysnapshot.forEach(async function(doc){
+                        console.log(doc.data());
+
+                        lister.push(doc.data())
+                    })
+                    console.log(lister);
+                })
+                return lister
+            } catch(error) {
+                console.error(error);
+            }
         }
-      this.handleChange = this.handleChange.bind(this);
-      this.handleWhenChange = this.handleWhenChange.bind(this);
-      this.handleDeadChange = this.handleDeadChange.bind(this);
-      this.handleSubmit = this.handleSubmit.bind(this);
-      this.handleDelete = this.handleDelete.bind(this);
+        
+        this.state = {
+            roomKey: roomKey,
+            roomer: roomer,
+            datas: getDatas()
+        }
+
+        console.log(this.state)
+        
+        this.handleChange = this.handleChange.bind(this);
+        this.handleWhenChange = this.handleWhenChange.bind(this);
+        this.handleDeadChange = this.handleDeadChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleDelete = this.handleDelete.bind(this);
+        this.fixDatas = this.fixDatas.bind(this);
     }
 
-    componentWillMount(){
-      const roomKey = this.props.match.params.id;
-      const { WavesKeeper } = window;
+    async componentWillMount(){
+        const { WavesKeeper } = window;
 
-      const getRoomData = async () => {
-        try {
-          let user = await WavesKeeper.publicState();
-          user = user.account.address;
+        let user = await WavesKeeper.publicState();
+        user = user.account.address;
 
-          let datas = await accountDataByKey(roomKey + '_data', waves.dAppAddress, waves.nodeUrl);
-          datas = datas.value;
-          datas = JSON.parse(datas);
+        let datas = await accountDataByKey(this.state.roomKey + '_data', waves.dAppAddress, waves.nodeUrl);
+        datas = datas.value;
+        datas = JSON.parse(datas);
+        console.log(datas);
 
-          let city = datas.city;
-          city = city.split(' - ');
+        let city = datas.city;
+        city = city.split(' - ');
 
-          let xs = {};
+        let xs = {};
 
-          if (datas.roomer === user) {
-            const fireNow = firebase.firestore().collection("users").doc(datas.roomer).collection("rooms").doc(roomKey)
+        // const status = await this.state.datas
+
+        if (datas.roomer === user) {
+            const fireNow = firebase.firestore().collection("users").doc(this.state.roomer).collection("rooms").doc(this.state.roomKey)
             await fireNow.get().then(function(doc){
                 xs.created_a = new Date(doc.data().created.seconds * 1000);
                 xs.dead_a = new Date(doc.data().dead.seconds * 1000);
                 xs.when_a = new Date(doc.data().when.seconds * 1000);
             })
-
             console.log(xs)
 
             this.setState({
                 author: true,
-                roomKey: roomKey,
-                roomer: datas.roomer,
+                created: xs.created_a,
                 country: city[2],
                 state: city[1],
                 city: city[0],
                 title: datas.title,
+                when: xs.when_a,
                 genre: datas.genre,
                 detail: datas.detail,
                 prize: Number(datas.prize),
-                duration: datas.duration,
-                height: datas.height,
-                created: xs.created_a,
                 dead: xs.dead_a,
-                when: xs.when_a
+                duration: datas.duration,
+                height: datas.height
             });
 
-            console.log(this.state);
-          }
-        }catch(error){
-          console.error(error)
+            console.log(this.state)
         }
-      }
-
-      getRoomData();
-
-      console.log(this.state);
     }
 
     handleChange(e) {
@@ -296,6 +312,11 @@ class RoomManage extends Component {
       });
     }
 
+    async fixDatas(data) {
+        const x = await data;
+        return x;
+    }
+
   
   
   render() {
@@ -304,6 +325,11 @@ class RoomManage extends Component {
     const { classes } = this.props;
 
     console.log(this.state);
+
+    const fixDatas = async (data) => {
+        const aaa = await data;
+        return aaa
+    }
 
     return (
       <div>
@@ -315,7 +341,7 @@ class RoomManage extends Component {
                     <TextField
                         id="country"
                         name="country"
-                        label="Country"
+                        placeholder="Country"
                         className={classes.areaField}
                         value={this.state.country}
                         onChange={this.handleChange}
@@ -327,7 +353,7 @@ class RoomManage extends Component {
                     <TextField
                         id="state"
                         name="state"
-                        label="State"
+                        placeholder="State"
                         className={classes.areaField}
                         value={this.state.state}
                         onChange={this.handleChange}
@@ -339,7 +365,7 @@ class RoomManage extends Component {
                     <TextField
                         id="city"
                         name="city"
-                        label="Cityname"
+                        placeholder="Cityname"
                         className={classes.areaField}
                         value={this.state.city}
                         onChange={this.handleChange}
@@ -352,7 +378,6 @@ class RoomManage extends Component {
             </FormControl>
 
             <FormControl className={classes.formControl}>
-                <InputLabel htmlFor="genre-select">Genre of information you'll require</InputLabel>
                 <Select
                     required="true"
                     variant="outlined"
@@ -400,7 +425,7 @@ class RoomManage extends Component {
                 <TextField
                     id="title"
                     name="title"
-                    label="Request title"
+                    placeholder="Request title"
                     className={classes.textField}
                     value={this.state.title}
                     onChange={this.handleChange}
@@ -415,7 +440,7 @@ class RoomManage extends Component {
                 <TextField
                     id="detail"
                     name="detail"
-                    label="Request description"
+                    placeholder="Request description"
                     className={classes.textField}
                     value={this.state.detail}
                     onChange={this.handleChange}
@@ -433,7 +458,7 @@ class RoomManage extends Component {
                     <TextField
                         id="prize"
                         name="prize"
-                        label="Amount of Prize (WAVES)"
+                        placeholder="Amount of Prize (WAVES)"
                         className={classes.prize}
                         value={this.state.prize}
                         onChange={this.handleChange}
@@ -492,10 +517,13 @@ class RoomManage extends Component {
           Delete Room.
         </Button>
 
+        <ProposalList datas={this.fixDatas(this.state.datas)} />
+
       </div>
     );
   }
 }
+
 
 // Material-ui関連
 RoomManage.propTypes = {
