@@ -60,8 +60,8 @@ class ShareDialog extends React.Component {
     const { classes } = this.props;
     
     // シェアボタン用
-    const shareUrl = "https://";
-    const title = "Logpose -man to man tourism curation dApp-";
+    const shareUrl = "https://logpose-dapps.firebaseapp.com/";
+    const title = "Logpose";
     
     return (
       <Dialog

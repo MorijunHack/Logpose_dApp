@@ -63,7 +63,6 @@ class MyRooms extends Component {
                   const docRef = firebase.firestore().collection("users").doc(address).collection("rooms");
                   await docRef
                       .where("roomerAddress", "==", address)
-                      .where("state", "==", "opened")
                       .orderBy("dead", "desc")
                       .orderBy("created", "desc")
                       .get()

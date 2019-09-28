@@ -11,6 +11,8 @@ import { Grid, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio } fro
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 
+import config from '../config/firebase-config';
+
 import * as waves from '../config/waves-config';
 import { accountDataByKey } from '@waves/waves-transactions/dist/nodeInteraction';
 import { base58Encode, sha256, stringToBytes } from '@waves/ts-lib-crypto';
@@ -149,19 +151,23 @@ class ProposalPaper extends Component {
             const txid = res["id"];
             console.log(txid);
 
-            // adoptionKeyを求める
-            const adoptionKey = "adoption_" + base58Encode(sha256(stringToBytes(room + propose)));
+            // // adoptionKeyを求める
+            // const adoptionKey = "adoption_" + base58Encode(sha256(stringToBytes(room + propose)));
 
-            const firedata= {
-                status: "adopted",
-                winner: this.props.data.contributorAddress, 
+            // const firedata= {
+            //     status: "adopted",
+            //     winner: this.props.data.contributorAddress, 
+            // }
+
+            const fireRoom= {
+                state: "closed", 
             }
 
             const roomer = this.props.data.roomerAddress
 
-            const db = firebase.firestore().collection('users').doc(roomer).collection("rooms").doc(room).collection('proposals').doc(propose);
-            db.update(firedata).then(function() {
-                alert('Room Updated Successfully! Txid:  ' + txid);
+            const db = firebase.firestore().collection('users').doc(roomer).collection("rooms").doc(room);
+            db.update(fireRoom).then(function() {
+                alert('Proposal adopted Successfully! Txid:  ' + txid);
             });
     
             // ステートを戻す

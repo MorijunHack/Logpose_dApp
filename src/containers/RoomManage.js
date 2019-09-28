@@ -97,24 +97,13 @@ class RoomManage extends Component {
 
         const getDatas = async () => {
             try {
-                const status = await accountDataByKey(roomKey + "_status", waves.dAppAddress, waves.nodeUrl);
-                if (status.value === "open"){
-                    const fireProp = firebase.firestore().collection("users").doc(roomer).collection("rooms").doc(roomKey).collection("proposals")
-                    await fireProp.orderBy("created", "desc").get().then(function(querysnapshot){
-                        querysnapshot.forEach(async function(doc){
-                            lister.push(doc.data())
-                        })
+                const fireProp = firebase.firestore().collection("users").doc(roomer).collection("rooms").doc(roomKey).collection("proposals")
+                await fireProp.orderBy("created", "desc").get().then(function(querysnapshot){
+                    querysnapshot.forEach(async function(doc){
+                        lister.push(doc.data())
                     })
-                    return lister
-                } else {
-                    const fireProp = firebase.firestore().collection("users").doc(roomer).collection("rooms").doc(roomKey).collection("proposals")
-                    await fireProp.where("status", "==", "adopted").get().then(function(querysnapshot){
-                        querysnapshot.forEach(async function(doc){
-                            lister.push(doc.data())
-                        })
-                    })
-                    return lister
-                }
+                })
+                return lister
                 
             } catch(error) {
                 console.error(error);

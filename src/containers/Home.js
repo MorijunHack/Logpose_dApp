@@ -6,7 +6,7 @@ import 'firebase/firestore';
 
 import { withStyles } from '@material-ui/core/styles';
 
-import RoomList from './RoomList';
+import HomeList from './HomeList';
 
 import * as waves from '../config/waves-config';
 import { accountDataByKey } from '@waves/waves-transactions/dist/nodeInteraction';
@@ -86,7 +86,7 @@ class Home extends Component {
           <img src="/images/Logpose_blueTitle.png" alt="title" className={classes.titleImage}/>
         </div>
 
-        <RoomList datas={this.state.datas} />
+        <HomeList datas={this.state.datas} />
         
       </div>
     );

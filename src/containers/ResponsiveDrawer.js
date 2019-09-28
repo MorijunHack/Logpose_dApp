@@ -260,7 +260,7 @@ class ResponsiveDrawer extends React.Component {
 
   renderLoginedComponent(classes){
     return (
-      <IconButton  color="inherit">
+      <IconButton  color="inherit" onClick={this.authFunc}>
         <Typography variant="button" color="inherit" noWrap>
           {this.state.user}
         </Typography>
