@@ -20,15 +20,15 @@ import MenuIcon from '@material-ui/icons/Menu';
 import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
 
 // Material-UIアイコン取得
-// import SettingsIcon from '@material-ui/icons/Settings';
 import InfoIcon from '@material-ui/icons/Info';
 import SearchIcon from '@material-ui/icons/Search';
 import ShareIcon from '@material-ui/icons/Share';
 import SendIcon from '@material-ui/icons/Send';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
-// import CardTravelIcon from '@material-ui/icons/CardTravel';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
+import AssistantIcon from '@material-ui/icons/Assistant';
+
 
 // Route関連
 import { Link } from 'react-router-dom';
@@ -38,13 +38,15 @@ import ShareDialog from '../containers/ShareDialog';
 
 // コンポーネントの準備
 import ResponsiveDrawerListItem from '../components/ResponsiveDrawerListItem';
+
+// wavesの準備
 import { accountDataByKey } from '@waves/waves-transactions/dist/nodeInteraction';
 import { base58Encode, sha256, stringToBytes } from '@waves/ts-lib-crypto';
 
 // 設定値
 const drawerWidth = 240;
 const headerNavigationHeight = 56;
-const bottomNavigationHeight = 56;
+// const bottomNavigationHeight = 56;
 
 const { WavesKeeper } = window;
 
@@ -68,7 +70,7 @@ const styles = theme => ({
   },
   toolBar: {
     justifyContent: 'space-between', // 中央寄せのため追加
-    minHeight: bottomNavigationHeight,
+    minHeight: headerNavigationHeight,
   },
   navIconHide: {
     [theme.breakpoints.up('md')]: {
@@ -88,7 +90,7 @@ const styles = theme => ({
     backgroundColor: theme.palette.background.default,
     padding: theme.spacing.unit * 3,
     paddingTop: `calc(10px + ${headerNavigationHeight}px)`,
-    paddingBottom: `calc(10px + ${bottomNavigationHeight}px)`,
+    // paddingBottom: `calc(10px + ${bottomNavigationHeight}px)`,
     paddingLeft: 0,
     paddingRight: 0,
     [theme.breakpoints.up('md')]: {
@@ -111,9 +113,10 @@ class ResponsiveDrawer extends React.Component {
       user: '',
       userAddress: '',
       userBalance: 0,
-      userPath: '',
       isLogin: false,
       balanceWaves: '',
+      mobileOpen: false,
+      shareDialogOpen: false,
     });
 
     const authData = { data: "Auth on my site" };
@@ -131,7 +134,6 @@ class ResponsiveDrawer extends React.Component {
                   user: userName,
                   userAddress: userAddress,
                   userBalance: userBalance,
-                  userPath: '/user/' + userAddress,
                   roomPath: "/rooms/" + userAddress
                 });
 
@@ -170,7 +172,7 @@ class ResponsiveDrawer extends React.Component {
           /*...processing errors */
       })
     } else {
-        window.confirm('If you wanna use this app, install Waveskeeper!')
+        let result = window.confirm('If you wanna use this app, install Waveskeeper!\nhttps://chrome.google.com/webstore/detail/waves-keeper/lpilbniiabackdjcionkobglmddfbcjo');
     }
   }
 
@@ -181,6 +183,13 @@ class ResponsiveDrawer extends React.Component {
     this.renderLoginedComponent = this.renderLoginedComponent.bind(this);
     this.shareDialogToggle = this.shareDialogToggle.bind(this);
     this.withdrawFunc = this.withdrawFunc.bind(this);
+  }
+
+  closeDrawerNav = () => {
+    this.setState({ mobileOpen: false });
+  }
+  openDrawerNav = () => {
+    this.setState({ mobileOpen: true });
   }
 
   async withdrawFunc(){
@@ -227,7 +236,6 @@ class ResponsiveDrawer extends React.Component {
                   user: userName,
                   userAddress: userAddress,
                   userBalance: userBalance,
-                  userPath: '/user/' + userAddress,
                   roomsPath: '/rooms/' + userAddress
                 });
             } catch(error) {
@@ -292,7 +300,7 @@ class ResponsiveDrawer extends React.Component {
         <List>
           {this.state.isLogin ? 
             <ResponsiveDrawerListItem
-              to={this.state.userPath}
+              to="/user"
               onClick={this.closeDrawerNav}
               icon={<AccountCircleIcon />}
               text="MyPage"
@@ -326,11 +334,11 @@ class ResponsiveDrawer extends React.Component {
           <ResponsiveDrawerListItem
             to="/proposals"
             onClick={this.closeDrawerNav}
-            icon={<SendIcon />}
+            icon={<AssistantIcon />}
             text="My Proposals"
           />
           <ResponsiveDrawerListItem
-            to={this.state.userPath}
+            to="/user"
             onClick={this.withdrawFunc}
             icon={<MonetizationOnIcon />}
             text={this.state.balanceWaves}

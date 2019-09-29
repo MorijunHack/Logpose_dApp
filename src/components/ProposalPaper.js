@@ -11,8 +11,6 @@ import { Grid, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio } fro
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 
-import config from '../config/firebase-config';
-
 import * as waves from '../config/waves-config';
 import { accountDataByKey } from '@waves/waves-transactions/dist/nodeInteraction';
 import { base58Encode, sha256, stringToBytes } from '@waves/ts-lib-crypto';
@@ -63,6 +61,9 @@ const styles = theme => ({
         marginLeft: '40%',
         marginTop: '30px',
         marginBottom: '50px'
+    },
+    btn: {
+        marginLeft: '40%'
     }
   });
 
@@ -83,6 +84,9 @@ class ProposalPaper extends Component {
         let data = await accountDataByKey(this.props.data.proposeKey + "_data", waves.dAppAddress, waves.nodeUrl);
         data = JSON.parse(data.value);
         console.log(data)
+
+        let roomStatus = await accountDataByKey(this.props.data.roomKey + "_status", waves.dAppAddress, waves.nodeUrl);
+        data.roomStatus = roomStatus.value;
 
         const proposerKey = base58Encode(sha256(stringToBytes(this.props.data.contributorAddress)));
         let count = await accountDataByKey(proposerKey + "_evaluateCount", waves.dAppAddress, waves.nodeUrl);
@@ -374,10 +378,11 @@ class ProposalPaper extends Component {
                         </Grid>
                         
                         {this.state.roomOwner &&
-                            <Button onClick={this.adoptionFunc} className={classes.button}>
-                                <Avatar className={classes.wwwAvatar} src="/images/check.svg"/>
-                                <b>adoption</b>
-                            </Button>
+                            this.state.roomStatus === "open" &&
+                                <Button onClick={this.adoptionFunc} className={classes.btn}>
+                                    <Avatar className={classes.wwwAvatar} src="/images/check.svg"/>
+                                    <b>adoption</b>
+                                </Button>
                         }
                     </Paper>
                 </div>

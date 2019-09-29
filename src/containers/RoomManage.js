@@ -93,10 +93,9 @@ class RoomManage extends Component {
         console.log(roomKey)
         console.log(roomer)
 
-        let lister = [];
-
         const getDatas = async () => {
             try {
+                let lister = [];
                 const fireProp = firebase.firestore().collection("users").doc(roomer).collection("rooms").doc(roomKey).collection("proposals")
                 await fireProp.orderBy("created", "desc").get().then(function(querysnapshot){
                     querysnapshot.forEach(async function(doc){
@@ -145,11 +144,13 @@ class RoomManage extends Component {
                 xs.created_a = new Date(doc.data().created.seconds * 1000);
                 xs.dead_a = new Date(doc.data().dead.seconds * 1000);
                 xs.when_a = new Date(doc.data().when.seconds * 1000);
+                xs.status = doc.data().state
             })
             console.log(xs)
 
             this.setState({
                 author: true,
+                status: xs.status,
                 created: xs.created_a,
                 country: city[2],
                 state: city[1],
@@ -475,27 +476,34 @@ class RoomManage extends Component {
             </FormControl>
         </form>
 
-        <Button
-          variant="contained"
-          color="primary"
-          className={classes.button}
-          onClick={this.handleSubmit}
-        >
-          Save Changes
-        </Button>
+        {this.state.status === "opened" &&
+            <div>
+                <Button
+                variant="contained"
+                color="primary"
+                className={classes.button}
+                onClick={this.handleSubmit}
+                >
+                Save Changes
+                </Button>
 
-        <Button
-          variant="contained"
-          color="success"
-          className={classes.button}
-          onClick={this.handleDelete}
-        >
-          Delete Room.
-        </Button>
+                <Button
+                variant="contained"
+                color="success"
+                className={classes.button}
+                onClick={this.handleDelete}
+                >
+                Delete Room.
+                </Button>
+            </div>
+        }
 
-        <h1 className={classes.genretitle}>Proposals</h1>
-        <ProposalList datas={this.fixDatas(this.state.datas)} />
-
+        {this.state.datas !== [] &&
+            <div>
+                <h1 className={classes.genretitle}>Proposals</h1>
+                <ProposalList datas={this.fixDatas(this.state.datas)} />
+            </div>
+        }
       </div>
     );
   }

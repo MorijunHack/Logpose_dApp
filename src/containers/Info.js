@@ -4,6 +4,7 @@ import { withStyles } from '@material-ui/core/styles';
 
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
+import { Grid } from '@material-ui/core';
 
 // スタイル
 const styles = theme => ({
@@ -21,6 +22,13 @@ const styles = theme => ({
     marginTop: 10,
     marginBottom: 10,
   },
+  directions: {
+    margin: 20,
+    width: '60%'
+  },
+  dirDiv: {
+    width: '20%'
+  }
 });
 
 
@@ -69,8 +77,21 @@ class Info extends React.Component {
               これはDEMOサイトなので、WAVESもテストネットになります。
             </Typography>
             <Typography component="p" className={classes.paragraph}>
+              ※ WavesPlatformというブロックチェーンを使用するため、ブラウザ拡張機能「WavesKeeper」のインストールが必須です。このツールは皆さんの秘密情報を安全に保ちつつ、必要な処理をブロックチェーンに対して行うための便利ツールです。認証もsignatureも全てWavesKeeperを用います。
+            </Typography>
+            <Typography component="p" className={classes.paragraph}>
+              ※ 今回はDEMOサイトなのでテストネット上にアカウントを用意してください。テストネットへの切り替えは画面左下部で行えます。
+            </Typography>
+            <Typography component="p" className={classes.paragraph}>
               ※ テストネット用のトークン配布サイト（https://wavesexplorer.com/testnet/faucet）から無料でトークンを落としてテストすることが可能です。
+            </Typography>
+            <Typography component="p" className={classes.paragraph}>
+              ※ セットアップのやり方は下のペーパーをご参照ください。
+            </Typography>
+            <Typography component="p" className={classes.paragraph}>
+
               <ol>
+                <li>ユーザーは皆、ブラウザ拡張機能のWavesKeeperをインストールし、testnet上にアカウントを作り、上記のfaucetからwavesを入手します。</li>
                 <li>旅行者は質問"Room"を立ち上げて、行きたい都市と知りたい情報を投稿し、同時に報酬をdAppsに預託します。</li>
                 <li>都市に詳しい現地人や先輩旅行者が、Roomに対して提案（Proposal）を投稿します。</li>
                 <li>"Roomer"は、期限までにProposalからどれかを採用（Adoption）します。これと同時に採用された提案者にトークンが送られます。</li>
@@ -78,6 +99,59 @@ class Info extends React.Component {
                 <li>Roomerは、採用したProposalの提案者に後から点数をつけることができます。</li>
               </ol>
             </Typography>
+          </Paper>
+
+          <Paper className={classes.root} elevation={1}>
+            <Typography variant="headline" component="h3">
+              Logposeのセットアップ
+            </Typography>
+            <Typography component="p" className={classes.paragraph}>
+              <b>■ WavesKeeperのセットアップ</b><br/>
+              下準備としてブラウザ拡張機能の「<a href="https://chrome.google.com/webstore/detail/waves-keeper/lpilbniiabackdjcionkobglmddfbcjo" target="_blank">WavesKeeper</a>」を入手してください。
+            </Typography>
+            <Grid container justify="space-around">
+              <div className={classes.dirDiv}>
+                <p><b>① Testnetを選択</b></p>
+                <img src="/images/direction_1.png" alt="direction_1" className={classes.directions} />
+              </div>
+              <div className={classes.dirDiv}>
+                <p><b>② Create Account</b></p>
+                <img src="/images/direction_2.png" alt="direction_2" className={classes.directions} />
+              </div>
+              <div className={classes.dirDiv}>
+                <p><b>③ アドレスを選択</b></p>
+                <img src="/images/direction_3.png" alt="direction_3" className={classes.directions} />
+              </div>
+            </Grid>
+            <Grid container justify="space-around">
+              <div className={classes.dirDiv}>
+                <p><b>④ アカウント名設定</b></p>
+                <img src="/images/direction_4.png" alt="direction_4" className={classes.directions} />
+              </div>
+              <div className={classes.dirDiv}>
+                <p><b>⑤ Backup Phrase</b></p>
+                <img src="/images/direction_5.png" alt="direction_5" className={classes.directions} />
+              </div>
+              <div className={classes.dirDiv}>
+                <p><b>⑥ Backup Phrase</b></p>
+                <img src="/images/direction_6.png" alt="direction_6" className={classes.directions} /></div>
+            </Grid>
+            <Typography component="p" className={classes.paragraph}>
+              <b>■ Faucetから入金</b>
+            </Typography>
+            <Grid container justify="space-around">
+              <div className={classes.dirDiv}>
+                <p><b>① アドレスをコピー</b></p>
+                <img src="/images/direction_7.png" alt="direction_7" className={classes.directions} />
+              </div>
+              <div className={classes.dirDiv}>
+                <p><b>② <a href="https://wavesexplorer.com/testnet/faucet" target="_blank">Faucet</a>に入金申請</b></p>
+                <img src="/images/direction_8.png" alt="direction_8" className={classes.directions} />
+              </div>
+              <div className={classes.dirDiv}>
+                <p><b>③ 入金確認</b></p>
+                <img src="/images/direction_9.png" alt="direction_9" className={classes.directions} /></div>
+            </Grid>
           </Paper>
           
           <Paper className={classes.root} elevation={1}>

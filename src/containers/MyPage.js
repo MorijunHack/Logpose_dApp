@@ -15,6 +15,8 @@ import PermContactCalendarIcon from '@material-ui/icons/PermContactCalendar';
 import LanguageIcon from '@material-ui/icons/Language';
 import LocalAtmIcon from '@material-ui/icons/LocalAtm';
 import LocalActivityIcon from '@material-ui/icons/LocalActivity';
+import StarsIcon from '@material-ui/icons/Stars';
+import RateReviewIcon from '@material-ui/icons/RateReview';
 
 // Redux関連
 import { connect } from 'react-redux';
@@ -57,8 +59,7 @@ class MyPage extends Component {
 
   componentWillMount(){
     this.state = {
-      fakeUser: false,
-      id: '',
+      address: '',
       balance: 0,
       name: '',
       mealpolicy: '',
@@ -69,17 +70,15 @@ class MyPage extends Component {
       prize: 0
     }
 
-    console.log(this.props);
-    const id = this.props.match.params.id;
-
-    const judgeAccount = async () => {
+    const initAccount = async () => {
       try {
           const accountState = await WavesKeeper.publicState();
           console.log(accountState);
           const userAddress = accountState.account.address;
           const userKey = base58Encode(sha256(stringToBytes(userAddress)));
           const userName = accountState.account.name;
-          const userBalance = accountState.account.balance.available;
+          let userBalance = accountState.account.balance.available;
+          userBalance = String((userBalance / 100000000).toFixed(8)) + " WAVES"
           
           let mealpolicy = await accountDataByKey((userKey + "_mealpolicy"), waves.dAppAddress, waves.nodeUrl);
           if (mealpolicy === null || mealpolicy === 'not set') {
@@ -111,6 +110,8 @@ class MyPage extends Component {
             prize = {value: 0}
           };
 
+          prize = String((prize.value / 100000000).toFixed(8)) + " WAVES"
+
           let evaluateCount = await accountDataByKey((userKey + "_evaluateCount"), waves.dAppAddress, waves.nodeUrl);
           if (evaluateCount === null) {
             evaluateCount = {value: 0}
@@ -136,32 +137,25 @@ class MyPage extends Component {
           const adoptionRatio = roomCount.value + ' / ' + adoptCount.value
 
           console.log(mealpolicy)
-          
-          if (userAddress === id) {
-            this.setState({
-              name: userName,
-              id: userAddress,
-              balance: userBalance,
-              mealpolicy: mealpolicy.value,
-              sex: sex.value,
-              age: age.value,
-              hobby: hobby.value,
-              area: area.value,
-              prize: prize.value,
-              averageEvaluation: averageEvaluation,
-              adoptionRatio: adoptionRatio
-            });
-          } else {
-            this.setState({
-              fakeUser: true
-            });
-          }
+          this.setState({
+            name: userName,
+            address: userAddress,
+            balance: userBalance,
+            mealpolicy: mealpolicy.value,
+            sex: sex.value,
+            age: age.value,
+            hobby: hobby.value,
+            area: area.value,
+            prize: prize,
+            averageEvaluation: averageEvaluation,
+            adoptionRatio: adoptionRatio
+          });
       } catch(error) {
           console.error(error); // displaying the result in the console
           /*... processing errors */
       }
     }
-    judgeAccount();
+    initAccount();
   }
 
   constructor(props) {
@@ -228,141 +222,137 @@ class MyPage extends Component {
     const { classes } = this.props;
     return (
       <div>
-        {this.state.fakeUser ?
-          <h2>You cannot access this page.</h2>
-        :
-          <div>
-            <h2>{this.state.name}</h2>
-            <div className={classes.root}>
-              <List>
-                <ListItem>
-                  <ListItemIcon>
-                    <img src="/images/waves-logo.png" alt="waves" className={classes.waves} />
-                  </ListItemIcon>
-                  <ListItemText primary="Address" />
-                  <ListItemSecondaryAction>
-                    <Typography component="p" className={classes.text}>{this.state.id}</Typography>
-                  </ListItemSecondaryAction>
-                </ListItem>
+        <div>
+          <h2>{this.state.name}</h2>
+          <div className={classes.root}>
+            <List>
+              <ListItem>
+                <ListItemIcon>
+                  <img src="/images/waves-logo.png" alt="waves" className={classes.waves} />
+                </ListItemIcon>
+                <ListItemText primary="Address" />
+                <ListItemSecondaryAction>
+                  <Typography component="p" className={classes.text}>{this.state.address}</Typography>
+                </ListItemSecondaryAction>
+              </ListItem>
 
-                <ListItem>
-                  <ListItemIcon>
-                    <img src="/images/waves-logo.png" alt="waves" className={classes.waves} />
-                  </ListItemIcon>
-                  <ListItemText primary="average point" />
-                  <ListItemSecondaryAction>
-                    <Typography component="p" className={classes.text}>{this.state.averageEvaluation}</Typography>
-                  </ListItemSecondaryAction>
-                </ListItem>
+              <ListItem>
+                <ListItemIcon>
+                  <StarsIcon />
+                </ListItemIcon>
+                <ListItemText primary="average point" />
+                <ListItemSecondaryAction>
+                  <Typography component="p" className={classes.text}>{this.state.averageEvaluation}</Typography>
+                </ListItemSecondaryAction>
+              </ListItem>
 
-                <ListItem>
-                  <ListItemIcon>
-                    <img src="/images/waves-logo.png" alt="waves" className={classes.waves} />
-                  </ListItemIcon>
-                  <ListItemText primary="Adoption Ratio" />
-                  <ListItemSecondaryAction>
-                    <Typography component="p" className={classes.text}>{this.state.adoptionRatio}</Typography>
-                  </ListItemSecondaryAction>
-                </ListItem>
-                
-                <ListItem>
-                  <ListItemIcon>
-                    <AccountBalanceWalletSharpIcon />
-                  </ListItemIcon>
-                  <ListItemText primary="Balance" />
-                  <ListItemSecondaryAction>
-                     <Typography component="p" className={classes.text}>{this.state.balance}</Typography>
-                  </ListItemSecondaryAction>
-                </ListItem>
+              <ListItem>
+                <ListItemIcon>
+                  <RateReviewIcon />
+                </ListItemIcon>
+                <ListItemText primary="Adoption Ratio" />
+                <ListItemSecondaryAction>
+                  <Typography component="p" className={classes.text}>{this.state.adoptionRatio}</Typography>
+                </ListItemSecondaryAction>
+              </ListItem>
+              
+              <ListItem>
+                <ListItemIcon>
+                  <AccountBalanceWalletSharpIcon />
+                </ListItemIcon>
+                <ListItemText primary="Balance" />
+                <ListItemSecondaryAction>
+                    <Typography component="p" className={classes.text}>{this.state.balance}</Typography>
+                </ListItemSecondaryAction>
+              </ListItem>
 
-                <ListItem>
-                  <ListItemIcon>
-                    <LocalAtmIcon />
-                  </ListItemIcon>
-                  <ListItemText primary="Amount you can withdraw" />
-                  <ListItemSecondaryAction>
-                    <Typography component="p" className={classes.text}>{this.state.prize}</Typography>
-                  </ListItemSecondaryAction>
-                </ListItem>
+              <ListItem>
+                <ListItemIcon>
+                  <LocalAtmIcon />
+                </ListItemIcon>
+                <ListItemText primary="Amount you can withdraw" />
+                <ListItemSecondaryAction>
+                  <Typography component="p" className={classes.text}>{this.state.prize}</Typography>
+                </ListItemSecondaryAction>
+              </ListItem>
 
-                <ListItem>
-                  <ListItemIcon>
-                    <ThumbDownIcon />
-                  </ListItemIcon>
-                  <ListItemText primary="Foods you can't eat" />
-                  <ListItemSecondaryAction>
-                     <Input type="text" value={this.state.mealpolicy} name="mealpolicy" onChange={this.doChange} className={classes.forms}   />
-                  </ListItemSecondaryAction>
-                </ListItem>
+              <ListItem>
+                <ListItemIcon>
+                  <ThumbDownIcon />
+                </ListItemIcon>
+                <ListItemText primary="Foods you can't eat" />
+                <ListItemSecondaryAction>
+                    <Input type="text" value={this.state.mealpolicy} name="mealpolicy" onChange={this.doChange} className={classes.forms}   />
+                </ListItemSecondaryAction>
+              </ListItem>
 
-                <ListItem>
-                  <ListItemIcon>
-                    <WcIcon />
-                  </ListItemIcon>
-                  <ListItemText primary="Gender" />
-                  <ListItemSecondaryAction>
-                  <FormControl className={classes.formControl}>
-                    <Select
-                      value={this.state.sex}
-                      onChange={this.doChange}
-                      className={classes.input}
-                      inputProps={{
-                        name: 'sex',
-                      }}
-                    >
-                      <MenuItem value="">
-                        <em>None</em>
-                      </MenuItem>
-                      <MenuItem value={"Male"}>Male</MenuItem>
-                      <MenuItem value={"Female"}>Female</MenuItem>
-                      <MenuItem value={"Other"}>Other</MenuItem>
-                    </Select>
-                  </FormControl>
-                  </ListItemSecondaryAction>
-                </ListItem>
+              <ListItem>
+                <ListItemIcon>
+                  <WcIcon />
+                </ListItemIcon>
+                <ListItemText primary="Gender" />
+                <ListItemSecondaryAction>
+                <FormControl className={classes.formControl}>
+                  <Select
+                    value={this.state.sex}
+                    onChange={this.doChange}
+                    className={classes.input}
+                    inputProps={{
+                      name: 'sex',
+                    }}
+                  >
+                    <MenuItem value="">
+                      <em>None</em>
+                    </MenuItem>
+                    <MenuItem value={"Male"}>Male</MenuItem>
+                    <MenuItem value={"Female"}>Female</MenuItem>
+                    <MenuItem value={"Other"}>Other</MenuItem>
+                  </Select>
+                </FormControl>
+                </ListItemSecondaryAction>
+              </ListItem>
 
-                <ListItem>
-                  <ListItemIcon>
-                    <PermContactCalendarIcon />
-                  </ListItemIcon>
-                  <ListItemText primary="Age" />
-                  <ListItemSecondaryAction>
-                    <Input type="number" value={this.state.age} name="age" onChange={this.doChange} className={classes.input} />
-                  </ListItemSecondaryAction>
-                </ListItem>
+              <ListItem>
+                <ListItemIcon>
+                  <PermContactCalendarIcon />
+                </ListItemIcon>
+                <ListItemText primary="Age" />
+                <ListItemSecondaryAction>
+                  <Input type="number" value={this.state.age} name="age" onChange={this.doChange} className={classes.input} />
+                </ListItemSecondaryAction>
+              </ListItem>
 
-                <ListItem>
-                  <ListItemIcon>
-                    <LocalActivityIcon />
-                  </ListItemIcon>
-                  <ListItemText primary="Hobbies" />
-                  <ListItemSecondaryAction>
-                    <Input type="text" value={this.state.hobby} name="hobby" onChange={this.doChange} className={classes.input} />
-                  </ListItemSecondaryAction>
-                </ListItem>
+              <ListItem>
+                <ListItemIcon>
+                  <LocalActivityIcon />
+                </ListItemIcon>
+                <ListItemText primary="Hobbies" />
+                <ListItemSecondaryAction>
+                  <Input type="text" value={this.state.hobby} name="hobby" onChange={this.doChange} className={classes.input} />
+                </ListItemSecondaryAction>
+              </ListItem>
 
-                <ListItem>
-                  <ListItemIcon>
-                    <LanguageIcon />
-                  </ListItemIcon>
-                  <ListItemText primary="Your main location" />
-                  <ListItemSecondaryAction>
-                    <Input type="text" value={this.state.area} name="area" onChange={this.doChange} className={classes.input} />
-                  </ListItemSecondaryAction>
-                </ListItem>
+              <ListItem>
+                <ListItemIcon>
+                  <LanguageIcon />
+                </ListItemIcon>
+                <ListItemText primary="Your main location" />
+                <ListItemSecondaryAction>
+                  <Input type="text" value={this.state.area} name="area" onChange={this.doChange} className={classes.input} />
+                </ListItemSecondaryAction>
+              </ListItem>
 
-              </List>
-            </div>
-            <Button
-                variant="contained"
-                color="primary"
-                className={classes.button}
-                onClick={this.doSubmit}
-              >
-                SaveChanges
-              </Button>
+            </List>
           </div>
-        }
+          <Button
+              variant="contained"
+              color="primary"
+              className={classes.button}
+              onClick={this.doSubmit}
+            >
+              SaveChanges
+            </Button>
+        </div>
       </div>
     );
   }

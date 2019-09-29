@@ -40,7 +40,7 @@ class App extends Component {
           <Switch>
             <Route exact path="/" component={WrapMainContent(Home)} />
             <Route exact path="/info" component={WrapMainContent(Info)}/>
-            <Route exact path="/user/:id" component={WrapMainContent(MyPage)} />
+            <Route exact path="/user" component={WrapMainContent(MyPage)} />
             <Route exact path="/proposals" component={WrapMainContent(MyProposals)} />
             <Route exact path="/rooms/:id" component={WrapMainContent(MyRooms)}/>
             <Route exact path="/room_create" component={WrapMainContent(RoomCreate)}/>
