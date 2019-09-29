@@ -92,6 +92,11 @@ class Proposer extends Component {
                 roomer = roomer.value;
                 console.log(roomer);
 
+                let proposalCount = await accountDataByKey(this.state.roomKey + "_proposals", waves.dAppAddress, waves.nodeUrl);
+                if (proposalCount === null) {
+                    proposalCount = {value: 0}
+                }
+
                 const proposerState = await WavesKeeper.publicState();
 
                 let proposer = proposerState.account.address;
@@ -193,7 +198,7 @@ class Proposer extends Component {
                     roomKey: this.state.roomKey,
                     contributorAddress: contributor,
                     roomerAddress: this.state.roomer,
-                    propose: {title: this.state.ansTitle, detail: this.state.ansDetail, url: this.state.url},
+                    // propose: {title: this.state.ansTitle, detail: this.state.ansDetail, url: this.state.url},
                     created: new Date()
                 }
                 console.log(firedata);

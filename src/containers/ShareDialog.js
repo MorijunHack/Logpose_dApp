@@ -52,7 +52,7 @@ class ShareDialog extends React.Component {
     const { classes } = this.props;
     
     // シェアボタン用
-    const shareUrl = "https://logpose-dapps.firebaseapp.com/";
+    const shareUrl = "https://logpose-dapps.web.app";
     const title = "Logpose";
     
     return (

@@ -57,6 +57,11 @@ class RoomInfo extends Component {
 
                 const roomerKey = base58Encode(sha256(stringToBytes(roomer)));
 
+                let proposalCount = await accountDataByKey(id + "_proposals", waves.dAppAddress, waves.nodeUrl);
+                if (proposalCount === null) {
+                    proposalCount = {value: 0}
+                }
+
                 let roomerMeal = await accountDataByKey(roomerKey + '_mealpolicy', waves.dAppAddress, waves.nodeUrl);
                 if (roomerMeal === null) {
                     roomerMeal = {value: 'not set'};
@@ -137,7 +142,7 @@ class RoomInfo extends Component {
                     hobby: roomerHobby.value,
                     area: roomerArea.value,
                     roomCount: roomerRoomCount.value,
-                    adoptionRatio: adoptionRatio
+                    adoptionRatio: adoptionRatio,
                 }
                 console.log(roomerData);
 
@@ -149,7 +154,8 @@ class RoomInfo extends Component {
                     genre: roomData.genre,
                     prize: String(Number(roomData.prize).toFixed(8)),
                     title: roomData.title,
-                    when: fixDate(roomData.when)
+                    when: fixDate(roomData.when),
+                    proposalCount: proposalCount.value
                 }
                 console.log(roomData2);
 
@@ -201,6 +207,11 @@ class RoomInfo extends Component {
                             <li>
                                 <Typography component="p" className={classes.paragraph}>
                                     <b>Deadline :</b>  {this.state.roomInfo.dead}  
+                                </Typography>
+                            </li>
+                            <li>
+                                <Typography component="p" className={classes.paragraph}>
+                                    <b>Number of Proposals :</b>  {this.state.roomInfo.proposalCount}  
                                 </Typography>
                             </li>
                         </ul>

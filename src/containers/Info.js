@@ -23,11 +23,11 @@ const styles = theme => ({
     marginBottom: 10,
   },
   directions: {
-    margin: 20,
-    width: '60%'
+    margin: '20px auto',
+    width: '100%'
   },
   dirDiv: {
-    width: '20%'
+    width: '30%'
   }
 });
 

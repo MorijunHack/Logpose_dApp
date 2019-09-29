@@ -23,7 +23,8 @@ const styles = {
     margin: 10,
   },
   top: {
-    height: '50px'
+    height: '50px',
+    color: 'indigo'
   },
   title: {
     fontSize: 14,
