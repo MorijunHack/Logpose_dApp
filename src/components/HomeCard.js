@@ -19,11 +19,11 @@ const styles = {
   // Cards
   card: {
     width: 330,
-    height: 400,
+    height: 460,
     margin: 10,
   },
   top: {
-    height: '40px'
+    height: '50px'
   },
   title: {
     fontSize: 14,
@@ -40,7 +40,10 @@ const styles = {
     justifyContent: 'center',
   },
   list: {
-    margin: '20px auto'
+    margin: '0 auto',
+  },
+  content: {
+    paddingBottom: 0
   }
 };
 
@@ -48,21 +51,36 @@ class HomeCard extends Component {
   constructor(props){
     super(props);
     this.state = {}
+    console.log(this.props)
     
     const setDataStatus = async () => {
       try {
         const dataStatus = await this.props.data;
+        console.log(dataStatus)
+        const roomerKey = base58Encode(sha256(stringToBytes(dataStatus.roomer)), waves.dAppAddress, waves.nodeUrl);
+        let total = await accountDataByKey(roomerKey + "_roomCount", waves.dAppAddress, waves.nodeUrl);
+        if (total === null) {
+          total = {value: 1}
+        }
+        console.log(total.value)
+        let adoptCount = await accountDataByKey(roomerKey + "_adoptCount", waves.dAppAddress, waves.nodeUrl);
+        if (adoptCount === null) {
+          adoptCount = {value: 0}
+        }
+        console.log(adoptCount.value)
+
+        let proposeCount = await accountDataByKey(this.props.roomKey + "_proposals", waves.dAppAddress, waves.nodeUrl);
+        if (proposeCount === null) {
+          proposeCount = {value: 0}
+        }
+        dataStatus.proposeCount = proposeCount.value
+        dataStatus.adoptionRatio = String((100 * (adoptCount.value * 1 / total.value * 1)).toFixed(2)) + " %"
         this.setState(dataStatus);
       } catch(error) {
         console.error(error)
       }
     }
     setDataStatus();
-
-    console.log(this.state);
-
-    this.authorFormat = this.authorFormat.bind(this);
-    this.proposerFormat = this.proposerFormat.bind(this);
   }
 
   authorFormat(data, roomKey, txHash, classes){
@@ -86,20 +104,21 @@ class HomeCard extends Component {
       createData('City', data.city),
       createData('Genre', data.genre),
       createData('Prize', String(Number(data.prize).toFixed(8)) + " WAVES"),
-      createData('Deadline', data.dead),
-      createData('Created', data.created),
+      createData('Dead', data.dead),
+      createData('Adoption Ratio', this.state.adoptionRatio),
+      createData('Propose Count', this.state.proposeCount),
     ]
     return (
       <Card className={classes.card}>
-        <CardContent>
+        <CardContent className={classes.content}>
           <Typography variant="headline" component="h4" className={classes.top}>
-            {data.title}
+            {this.state.title}
           </Typography>
           <Typography className={classes.title} color="textSecondary">
             <TableBody className={classes.list}>
               {rows.map(row => (
                 <TableRow key={row.title}>
-                  <TableCell component="th" scope="row" size="small">{row.title}</TableCell>
+                  <TableCell component="td" scope="row" size="small">{row.title}</TableCell>
                   <TableCell align="right">{row.info}</TableCell>
                 </TableRow>
               ))}
@@ -108,11 +127,11 @@ class HomeCard extends Component {
         </CardContent>
         <CardActions>
           <div className={classes.row}>
-            <a href={txShower(txHash)} target="_blank">
+            <a href={txShower(this.props.txHash)} target="_blank">
               <Avatar className={classes.wwwAvatar} src="/images/search.svg"/>
             </a>
         
-            <Link to={manager(roomKey, data.roomer)}>
+            <Link to={manager(this.props.roomKey, this.state.roomer)}>
               <Avatar className={classes.wwwAvatar} src="/images/pen.svg"/>
             </Link>
           </div>
@@ -138,13 +157,14 @@ class HomeCard extends Component {
       createData('Genre', data.genre),
       createData('Prize', String(Number(data.prize).toFixed(8)) + " WAVES"),
       createData('Deadline', data.dead),
-      createData('Created', data.created),
+      createData('Adoption Ratio', this.state.adoptionRatio),
+      createData('Propose Count', this.state.proposeCount),
     ]
 
     return (
       <Card className={classes.card}>
         <Link to={proposer(roomKey)}>
-          <CardContent>
+          <CardContent className={classes.content}>
             <Typography variant="headline" component="h4" className={classes.top}>
               {data.title}
             </Typography>

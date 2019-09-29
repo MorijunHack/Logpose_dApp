@@ -328,7 +328,7 @@ class ResponsiveDrawer extends React.Component {
                 text="Create Room"
               />
               <ResponsiveDrawerListItem
-                to={this.state.roomPath}
+                to="/rooms"
                 onClick={this.closeDrawerNav}
                 icon={<SendIcon />}
                 text="My Rooms"

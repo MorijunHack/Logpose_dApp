@@ -7,21 +7,25 @@ import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 import Avatar from '@material-ui/core/Avatar';
+import ChatBubbleIcon from '@material-ui/icons/ChatBubble';
 // Route関連
 import { Link } from 'react-router-dom';
 import { TableBody, TableRow, TableCell } from '@material-ui/core';
 import { base58Encode, sha256, stringToBytes } from '@waves/ts-lib-crypto';
+import { accountDataByKey } from '@waves/waves-transactions/dist/nodeInteraction';
+import * as waves from '../config/waves-config';
 
 
 const styles = {
   // Cards
   card: {
     width: 330,
-    height: 400,
+    height: 460,
     margin: 10,
   },
   top: {
-    height: '40px'
+    height: '50px',
+    color: 'indigo'
   },
   title: {
     fontSize: 14,
@@ -38,7 +42,10 @@ const styles = {
     justifyContent: 'center',
   },
   list: {
-    margin: '20px auto'
+    margin: '0 auto',
+  },
+  content: {
+    paddingBottom: 0
   }
 };
 
@@ -46,22 +53,44 @@ class RoomCard extends Component {
   constructor(props){
     super(props);
     this.state = {}
+    console.log(this.props)
     
     const setDataStatus = async () => {
       try {
         const dataStatus = await this.props.data;
+        console.log(dataStatus)
+        const roomerKey = base58Encode(sha256(stringToBytes(dataStatus.roomer)), waves.dAppAddress, waves.nodeUrl);
+        let total = await accountDataByKey(roomerKey + "_roomCount", waves.dAppAddress, waves.nodeUrl);
+        if (total === null) {
+          total = {value: 1}
+        }
+        console.log(total.value)
+        let adoptCount = await accountDataByKey(roomerKey + "_adoptCount", waves.dAppAddress, waves.nodeUrl);
+        if (adoptCount === null) {
+          adoptCount = {value: 0}
+        }
+        console.log(adoptCount.value)
+
+        let proposeCount = await accountDataByKey(this.props.roomKey + "_proposals", waves.dAppAddress, waves.nodeUrl);
+        if (proposeCount === null) {
+          proposeCount = {value: 0}
+        }
+        dataStatus.proposeCount = proposeCount.value
+        dataStatus.adoptionRatio = String((100 * (adoptCount.value * 1 / total.value * 1)).toFixed(2)) + " %"
         this.setState(dataStatus);
       } catch(error) {
         console.error(error)
       }
     }
     setDataStatus();
-
-    this.authorFormat = this.authorFormat.bind(this);
-    this.proposerFormat = this.proposerFormat.bind(this);
   }
 
-  authorFormat(data, roomKey, txHash, classes){
+  render(){
+    // Material-ui関連
+    const { classes } = this.props;
+
+    console.log(this.state);
+
     function manager(address, roomer) {
       return (
         "/room/" + address + '$' + roomer + "/auth/"
@@ -79,23 +108,24 @@ class RoomCard extends Component {
     }
 
     const rows = [
-      createData('City', data.city),
-      createData('Genre', data.genre),
-      createData('Prize', String(Number(data.prize).toFixed(8)) + " WAVES"),
-      createData('Deadline', data.dead),
-      createData('Created', data.created),
+      createData('City', this.state.city),
+      createData('Genre', this.state.genre),
+      createData('Prize', String(Number(this.state.prize).toFixed(8)) + " WAVES"),
+      createData('Created', this.state.created),
+      createData('Adoption Ratio', this.state.adoptionRatio),
+      createData('Propose Count', this.state.proposeCount),
     ]
     return (
       <Card className={classes.card}>
-        <CardContent>
+        <CardContent className={classes.content}>
           <Typography variant="headline" component="h4" className={classes.top}>
-            {data.title}
+            {this.state.title}
           </Typography>
           <Typography className={classes.title} color="textSecondary">
             <TableBody className={classes.list}>
               {rows.map(row => (
                 <TableRow key={row.title}>
-                  <TableCell component="th" scope="row" size="small">{row.title}</TableCell>
+                  <TableCell component="td" scope="row" size="small">{row.title}</TableCell>
                   <TableCell align="right">{row.info}</TableCell>
                 </TableRow>
               ))}
@@ -104,161 +134,17 @@ class RoomCard extends Component {
         </CardContent>
         <CardActions>
           <div className={classes.row}>
-            <a href={txShower(txHash)} target="_blank">
+            <a href={txShower(this.props.txHash)} target="_blank">
               <Avatar className={classes.wwwAvatar} src="/images/search.svg"/>
             </a>
         
-            <Link to={manager(roomKey, data.roomer)}>
+            <Link to={manager(this.props.roomKey, this.state.roomer)}>
               <Avatar className={classes.wwwAvatar} src="/images/pen.svg"/>
             </Link>
           </div>
         </CardActions>
       </Card>
     );
-  }
-
-  proposerFormat(data, roomKey, classes){
-    
-    function proposer(address){
-      return (
-        "/room/" + address + "/proposer"
-      );
-    }
-
-    function createData(title, info){
-      return {title, info}
-    }
-
-    const rows = [
-      createData('City', data.city),
-      createData('Genre', data.genre),
-      createData('Prize', String(Number(data.prize).toFixed(8)) + " WAVES"),
-      createData('Deadline', data.dead),
-      createData('Created', data.created),
-    ]
-
-    return (
-      <Card className={classes.card}>
-        <Link to={proposer(roomKey)}>
-          <CardContent>
-            <Typography variant="headline" component="h4" className={classes.top}>
-              {data.title}
-            </Typography>
-            <Typography className={classes.title} color="textSecondary">
-              <TableBody className={classes.list}>
-                {rows.map(row => (
-                  <TableRow key={row.title}>
-                    <TableCell component="th" scope="row" size="small">{row.title}</TableCell>
-                    <TableCell align="right">{row.info}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Typography>
-          </CardContent>
-        </Link>
-      </Card>
-    );
-  }
-
-  render(){
-    // Material-ui関連
-    const { classes } = this.props;
-
-    console.log(this.state);
-
-    return (
-      <div>
-        {this.state.author ?
-          this.authorFormat(this.state, this.props.roomKey, this.props.txHash, classes)
-          :
-          this.proposerFormat(this.state, this.props.roomKey, classes)
-        }
-      </div>
-    )
-
-    // function proposer(address){
-    //   return (
-    //     "/room/" + address + "/proposer"
-    //   );
-    // }
-
-    // function manager(address) {
-    //   return (
-    //     "/room/" + address + "/auth"
-    //   )
-    // }
-
-    // function txShower(hash) {
-    //   return (
-    //     "https://wavesexplorer.com/testnet/tx/" + hash
-    //   )
-    // }
-
-    // return (
-    //   <div>
-    //     <Card className={classes.card}>
-    //       <CardContent>
-    //         <Typography variant="headline" component="h4">
-    //           {this.state.title}
-    //         </Typography>
-    //         {this.state.city !== '' &&
-    //           <Typography className={classes.title} color="textSecondary">
-    //             {this.state.city}
-    //           </Typography>
-    //         }
-    //         {this.state.genre !== '' &&
-    //           <Typography className={classes.title} color="textSecondary">
-    //             {this.state.genre}
-    //           </Typography>
-    //         }
-    //         {this.state.prize !== '' &&
-    //           <Typography className={classes.title} color="textSecondary">
-    //             {this.state.prize}
-    //           </Typography>
-    //         }
-    //         {this.state.dead !== '' &&
-    //           <Typography className={classes.title} color="textSecondary">
-    //             {this.state.dead}
-    //           </Typography>
-    //         }
-    //         {this.state.created !== '' &&
-    //           <Typography className={classes.title} color="textSecondary">
-    //             {this.state.created}
-    //           </Typography>
-    //         }
-    //         {this.state.when !== '' &&
-    //           <Typography className={classes.title} color="textSecondary">
-    //             {this.state.when}
-    //           </Typography>
-    //         }
-    //         {this.state.roomerName !== '' &&
-    //           <Typography className={classes.title} color="textSecondary">
-    //             {this.state.roomerName}
-    //           </Typography>
-    //         }
-    //       </CardContent>
-    //       <CardActions>
-    //         <div className={classes.row}>
-    //           {this.props.roomKey !== '' &&
-    //             <Link to={proposer(this.props.roomKey)}>
-    //             <Avatar className={classes.wwwAvatar} src="/images/send.svg"/>
-    //             </Link>
-    //           }
-    //           {this.props.txHash !== '' &&
-    //             <a href={txShower(this.props.txHash)} target="_blank">
-    //               <Avatar className={classes.wwwAvatar} src="/images/search.svg"/>
-    //             </a>
-    //           }
-    //           {this.props.roomKey !== '' &&
-    //             <Link to={manager(this.props.roomKey)}>
-    //               <Avatar className={classes.wwwAvatar} src="/images/www.svg"/>
-    //             </Link>
-    //           }
-    //         </div>
-    //       </CardActions>
-    //     </Card>
-    //   </div>
-    // );
   }
 }
 

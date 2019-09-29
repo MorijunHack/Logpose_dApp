@@ -44,41 +44,38 @@ class MyRooms extends Component {
 
   componentWillMount(){
       const { WavesKeeper } = window;
-      const idUrl = this.props.match.params.id;
+      // const idUrl = this.props.match.params.id;
 
       const initState = async () => {
           try {
               const state = await WavesKeeper.publicState();
               const address = state.account.address;
+              this.setState({
+                address: address,
+                invalid: false
+              });
+              console.log(address);
 
-              if (address === idUrl) {
-                  this.setState({
-                    address: address,
-                    invalid: false
-                  });
-                  console.log(address);
+              const data = [];
 
-                  const data = [];
-
-                  const docRef = firebase.firestore().collection("users").doc(address).collection("rooms");
-                  await docRef
-                      .where("roomerAddress", "==", address)
-                      .orderBy("dead", "desc")
-                      .orderBy("created", "desc")
-                      .get()
-                      .then(function(querySnapshot) {
-                          querySnapshot.forEach(function(doc) {
-                              console.log(doc.id, " => ", doc.data());
-                              data.push(doc.data());
-                          });
-                          console.log(data)
-                      })
-                      .catch(function(error) {
-                          console.log("Error getting documents: ", error);
+              const docRef = firebase.firestore().collection("users").doc(address).collection("rooms");
+              await docRef
+                  .where("roomerAddress", "==", address)
+                  .orderBy("dead", "desc")
+                  .orderBy("created", "desc")
+                  .get()
+                  .then(function(querySnapshot) {
+                      querySnapshot.forEach(function(doc) {
+                          console.log(doc.id, " => ", doc.data());
+                          data.push(doc.data());
                       });
-                  this.setState({datas: data});
-                  console.log(this.state.datas)
-              }
+                      console.log(data)
+                  })
+                  .catch(function(error) {
+                      console.log("Error getting documents: ", error);
+                  });
+              this.setState({datas: data});
+              console.log(this.state.datas)
           }catch(error){
               console.error(error);
           }

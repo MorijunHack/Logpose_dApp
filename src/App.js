@@ -42,7 +42,7 @@ class App extends Component {
             <Route exact path="/info" component={WrapMainContent(Info)}/>
             <Route exact path="/user" component={WrapMainContent(MyPage)} />
             <Route exact path="/proposals" component={WrapMainContent(MyProposals)} />
-            <Route exact path="/rooms/:id" component={WrapMainContent(MyRooms)}/>
+            <Route exact path="/rooms" component={WrapMainContent(MyRooms)}/>
             <Route exact path="/room_create" component={WrapMainContent(RoomCreate)}/>
             <Route exact path="/room/:id/auth" component={WrapMainContent(RoomManage)}/>
             <Route exact path="/room/:id/proposer" component={WrapMainContent(Proposer)}/>

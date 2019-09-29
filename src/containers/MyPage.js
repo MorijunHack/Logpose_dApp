@@ -196,7 +196,7 @@ class MyPage extends Component {
             call: {
                     function: 'setUser',
                     args: [
-                        {type: "string",value: this.state.id},
+                        {type: "string",value: this.state.address},
                         {type: "string", value: this.state.mealpolicy},
                         {type: "string",value: this.state.sex},
                         {type: "integer",value: this.state.age},
