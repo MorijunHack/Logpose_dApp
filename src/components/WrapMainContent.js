@@ -4,9 +4,6 @@ import { withStyles } from '@material-ui/core/styles';
 // スクロールバー設定
 import { Scrollbars } from 'react-custom-scrollbars';
 
-// Google Analystics関連
-import WithTracker from '../components/WithTracker'
-
 // スタイル
 const styles = theme => ({
   wrapper: {
@@ -45,9 +42,7 @@ const WrapMainContent = (WrappedComponent, options = {}) => {
   };
 
   return (
-    WithTracker( //Google Analystics用Wrapper
-      withStyles(styles, { withTheme: true })(HOC)
-    )
+    withStyles(styles, { withTheme: true })(HOC)
   );
 };
 

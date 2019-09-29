@@ -319,30 +319,34 @@ class ResponsiveDrawer extends React.Component {
             icon={<SearchIcon />}
             text="Room Search"
           />
-          <ResponsiveDrawerListItem
-            to="/room_create"
-            onClick={this.closeDrawerNav}
-            icon={<AddCircleIcon />}
-            text="Create Room"
-          />
-          <ResponsiveDrawerListItem
-            to={this.state.roomPath}
-            onClick={this.closeDrawerNav}
-            icon={<SendIcon />}
-            text="My Rooms"
-          />
-          <ResponsiveDrawerListItem
-            to="/proposals"
-            onClick={this.closeDrawerNav}
-            icon={<AssistantIcon />}
-            text="My Proposals"
-          />
-          <ResponsiveDrawerListItem
-            to="/user"
-            onClick={this.withdrawFunc}
-            icon={<MonetizationOnIcon />}
-            text={this.state.balanceWaves}
-          />
+          {this.state.isLogin &&
+            <div>
+              <ResponsiveDrawerListItem
+                to="/room_create"
+                onClick={this.closeDrawerNav}
+                icon={<AddCircleIcon />}
+                text="Create Room"
+              />
+              <ResponsiveDrawerListItem
+                to={this.state.roomPath}
+                onClick={this.closeDrawerNav}
+                icon={<SendIcon />}
+                text="My Rooms"
+              />
+              <ResponsiveDrawerListItem
+                to="/proposals"
+                onClick={this.closeDrawerNav}
+                icon={<AssistantIcon />}
+                text="My Proposals"
+              />
+              <ResponsiveDrawerListItem
+                to="/user"
+                onClick={this.withdrawFunc}
+                icon={<MonetizationOnIcon />}
+                text={this.state.balanceWaves}
+              />
+            </div>
+          }
 
 
         </List>
@@ -424,5 +428,5 @@ ResponsiveDrawer.propTypes = {
   theme: PropTypes.object.isRequired,
 };
 
-// Material-uiのテーマ設定＋Redux設定
+// Material-uiのテーマ設定
 export default withStyles(styles, { withTheme: true })(ResponsiveDrawer);

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 // コンテナ読み込み
 import ResponsiveDrawer from './containers/ResponsiveDrawer';
-import Notification from './containers/Notification';
+// import Notification from './containers/Notification';
 import Home from './containers/Home';
 import Info from './containers/Info';
 import MyPage from './containers/MyPage';
@@ -35,7 +35,7 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <Notification/>
+        {/* <Notification/> */}
         <ResponsiveDrawer className="ResponsiveDrawer">
           <Switch>
             <Route exact path="/" component={WrapMainContent(Home)} />

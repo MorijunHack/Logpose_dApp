@@ -123,5 +123,5 @@ MyRooms.propTypes = {
   theme: PropTypes.object.isRequired,
 };
 
-// Material-uiのテーマ設定＋Redux設定
+// Material-uiのテーマ設定
 export default withStyles(styles, { withTheme: true })(MyRooms);

@@ -26,11 +26,6 @@ import {
 // クリップボードにコピー
 import {CopyToClipboard} from 'react-copy-to-clipboard';
 
-// Redux関連
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import * as actions from '../actions';
-
 
 // スタイル
 const styles = theme => ({
@@ -52,9 +47,6 @@ const styles = theme => ({
 class ShareDialog extends React.Component {
 
   render() {
-
-    // redux関連
-    const { actions } = this.props;
     
     // Material-ui関連
     const { classes } = this.props;
@@ -113,8 +105,7 @@ class ShareDialog extends React.Component {
           </EmailShareButton>
         </DialogContent>
         <DialogContent className={classes.snsShareButtonArea}>
-          <CopyToClipboard text={shareUrl}
-            onCopy={() => actions.setNotification('success','クリップボードにコピーしました')}>
+          <CopyToClipboard text={shareUrl}>
             <Button
               variant="contained"
               color="primary"
@@ -141,16 +132,5 @@ ShareDialog.propTypes = {
   theme: PropTypes.object.isRequired,
 };
 
-// Redux関連
-const mapState = (state, ownProps) => ({
-});
-function mapDispatch(dispatch) {
-  return {
-    actions: bindActionCreators(actions, dispatch),
-  };
-}
-
-// Material-uiのテーマ設定＋Redux設定
-export default connect(mapState, mapDispatch)(
-  withStyles(styles, { withTheme: true })(ShareDialog)
-);
+// Material-uiのテーマ設定
+export default withStyles(styles, { withTheme: true })(ShareDialog);

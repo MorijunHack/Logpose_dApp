@@ -163,11 +163,11 @@ class Info extends React.Component {
             </Typography>
             <Typography component="div" className={classes.paragraph}>
               <ul>
-                <li>Firebase Hosting</li>
-                <li>World Cities API</li>
-                <li>Google Translation API</li>
-                <li>React・Redux・Material-UI</li>
+                <li>Firebase Firestore</li>
+                <li>React</li>
+                <li>Material-UI</li>
                 <li>WAVES Platform・RIDE</li>
+                <li>WavesKeeper</li>
               </ul>
             </Typography>
           </Paper>
@@ -189,7 +189,7 @@ class Info extends React.Component {
             </Typography>
             <Typography component="p" className={classes.paragraph}>
               ソース：
-              <a href="#" target="_blank" rel="noopener noreferrer">
+              <a href="https://github.com/MorijunHack/Logpose_dApp" target="_blank" rel="noopener noreferrer">
                 GitHub
               </a>
             </Typography>

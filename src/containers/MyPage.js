@@ -18,11 +18,6 @@ import LocalActivityIcon from '@material-ui/icons/LocalActivity';
 import StarsIcon from '@material-ui/icons/Stars';
 import RateReviewIcon from '@material-ui/icons/RateReview';
 
-// Redux関連
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import * as actions from '../actions';
-
 import { Input, FormControl, InputLabel, Select, MenuItem, Button, Typography } from '@material-ui/core';
 
 import { accountDataByKey } from '@waves/waves-transactions/dist/nodeInteraction';
@@ -364,16 +359,5 @@ MyPage.propTypes = {
   theme: PropTypes.object.isRequired,
 };
 
-// Redux関連
-const mapState = (state, ownProps) => ({
-});
-function mapDispatch(dispatch) {
-  return {
-    actions: bindActionCreators(actions, dispatch),
-  };
-}
-
-// Material-uiのテーマ設定＋Redux設定
-export default connect(mapState, mapDispatch)(
-  withStyles(styles, { withTheme: true })(MyPage)
-);
+// Material-uiのテーマ設定
+export default withStyles(styles, { withTheme: true })(MyPage);
