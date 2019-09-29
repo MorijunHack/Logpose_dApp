@@ -1,23 +1,14 @@
+// React関連
 import React, { Component } from 'react';
+
+// material-ui関連
 import PropTypes from 'prop-types';
-
-import firebase from "firebase/app";
-import 'firebase/firestore';
-
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
-import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
-
-import * as waves from '../config/waves-config';
-
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
-
 import TextField from '@material-ui/core/TextField';
-
-import ProposalList from './ProposalList';
-
 import 'date-fns';
 import Grid from '@material-ui/core/Grid';
 import DateFnsUtils from '@date-io/date-fns';
@@ -27,13 +18,16 @@ import {
   KeyboardTimePicker
 } from '@material-ui/pickers';
 
-import { base58Encode, sha256, stringToBytes } from '@waves/ts-lib-crypto'
+// component呼び出し
+import ProposalList from './ProposalList';
 
-// waves-transactionsの取得
-import { currentHeight, accountDataByKey } from '@waves/waves-transactions/dist/nodeInteraction';
-import { Input } from '@material-ui/core';
+// firebase関連
+import firebase from "firebase/app";
+import 'firebase/firestore';
 
-// import ProposalList from './ProposalList';
+// waves関連
+import * as waves from '../config/waves-config';
+import { accountDataByKey } from '@waves/waves-transactions/dist/nodeInteraction';
 
 
 // スタイル
@@ -85,13 +79,8 @@ class RoomManage extends Component {
         let id = this.props.match.params.id;
         id = id.split('$');
 
-        console.log(id)
-
         const roomKey = id[0];
         const roomer = id[1];
-
-        console.log(roomKey)
-        console.log(roomer)
 
         const getDatas = async () => {
             try {
@@ -146,7 +135,6 @@ class RoomManage extends Component {
                 xs.when_a = new Date(doc.data().when.seconds * 1000);
                 xs.status = doc.data().state
             })
-            console.log(xs)
 
             this.setState({
                 author: true,
@@ -175,7 +163,6 @@ class RoomManage extends Component {
     }
 
     handleWhenChange(e) {
-        console.log(this);
         this.setState({
             when: e
         });
@@ -188,8 +175,6 @@ class RoomManage extends Component {
     }
 
     async handleSubmit() {
-
-      console.log(this.state);
 
         const { WavesKeeper } = window;
 
@@ -228,12 +213,10 @@ class RoomManage extends Component {
                     }, payment: []
             }
         }).then(async (tx) => {
-            console.log("Signiture Successfull!!");
 
             // txhashを求める
             const res = JSON.parse(tx);
             const txid = res["id"];
-            console.log(txid);
     
             // firestoreに書き込む
             const firedata = {
@@ -242,11 +225,9 @@ class RoomManage extends Component {
               when: this.state.when
             }
 
-            console.log(firedata);
-
             const db = firebase.firestore().collection('users').doc(this.state.roomer).collection("rooms").doc(this.state.roomKey)
             db.update(firedata).then(function() {
-                alert('Room Updated Successfully! Txid:  ' + txid);
+                alert('Room Updated Successfully!\nTxid:  ' + txid);
             });
         }).catch((error) => {
                 console.error("Something went wrong", error);
@@ -273,7 +254,6 @@ class RoomManage extends Component {
       }).then(async (tx) => {
         const res = JSON.parse(tx);
         const txid = res["id"];
-        console.log(txid);
 
         const firedata = {
           txHash: txid,
@@ -282,7 +262,6 @@ class RoomManage extends Component {
 
         const db = firebase.firestore().collection('users').doc(this.state.roomer).collection("rooms").doc(this.state.roomKey)
               db.update(firedata).then(function() {
-                console.log("aaaa");
               });
       }).catch((error) => {
         console.error("Something went wrong", error);
@@ -300,8 +279,6 @@ class RoomManage extends Component {
     
     // Material-ui関連
     const { classes } = this.props;
-
-    console.log(this.state);
 
     const fixDatas = async (data) => {
         const aaa = await data;

@@ -1,8 +1,9 @@
+// React関連
 import React, { Component } from 'react';
+
+// material-ui関連
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import * as waves from '../config/waves-config';
-
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -17,9 +18,10 @@ import LocalAtmIcon from '@material-ui/icons/LocalAtm';
 import LocalActivityIcon from '@material-ui/icons/LocalActivity';
 import StarsIcon from '@material-ui/icons/Stars';
 import RateReviewIcon from '@material-ui/icons/RateReview';
-
 import { Input, FormControl, InputLabel, Select, MenuItem, Button, Typography } from '@material-ui/core';
 
+// waves関連
+import * as waves from '../config/waves-config';
 import { accountDataByKey } from '@waves/waves-transactions/dist/nodeInteraction';
 import { base58Encode, sha256, stringToBytes } from '@waves/ts-lib-crypto'
 
@@ -68,7 +70,6 @@ class MyPage extends Component {
     const initAccount = async () => {
       try {
           const accountState = await WavesKeeper.publicState();
-          console.log(accountState);
           const userAddress = accountState.account.address;
           const userKey = base58Encode(sha256(stringToBytes(userAddress)));
           const userName = accountState.account.name;
@@ -131,7 +132,6 @@ class MyPage extends Component {
 
           const adoptionRatio = roomCount.value + ' / ' + adoptCount.value
 
-          console.log(mealpolicy)
           this.setState({
             name: userName,
             address: userAddress,
@@ -206,7 +206,6 @@ class MyPage extends Component {
                 }, payment: []
         }
     }).then(async (tx) => {
-        console.log("Signiture Successfull!!");
     }).catch((error) => {
             console.error("Something went wrong", error);
     });

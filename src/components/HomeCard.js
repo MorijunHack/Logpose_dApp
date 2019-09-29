@@ -1,15 +1,20 @@
+// React関連
 import React, { Component } from 'react';
+
+// material-ui関連
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import SendIcon from '@material-ui/icons/Send';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 import Avatar from '@material-ui/core/Avatar';
+import { TableBody, TableRow, TableCell } from '@material-ui/core';
+
 // Route関連
 import { Link } from 'react-router-dom';
-import { TableBody, TableRow, TableCell } from '@material-ui/core';
+
+// waves関連
 import { base58Encode, sha256, stringToBytes } from '@waves/ts-lib-crypto';
 import { accountDataByKey } from '@waves/waves-transactions/dist/nodeInteraction';
 import * as waves from '../config/waves-config';
@@ -52,23 +57,19 @@ class HomeCard extends Component {
   constructor(props){
     super(props);
     this.state = {}
-    console.log(this.props)
     
     const setDataStatus = async () => {
       try {
         const dataStatus = await this.props.data;
-        console.log(dataStatus)
         const roomerKey = base58Encode(sha256(stringToBytes(dataStatus.roomer)), waves.dAppAddress, waves.nodeUrl);
         let total = await accountDataByKey(roomerKey + "_roomCount", waves.dAppAddress, waves.nodeUrl);
         if (total === null) {
           total = {value: 1}
         }
-        console.log(total.value)
         let adoptCount = await accountDataByKey(roomerKey + "_adoptCount", waves.dAppAddress, waves.nodeUrl);
         if (adoptCount === null) {
           adoptCount = {value: 0}
         }
-        console.log(adoptCount.value)
 
         let proposeCount = await accountDataByKey(this.props.roomKey + "_proposals", waves.dAppAddress, waves.nodeUrl);
         if (proposeCount === null) {
@@ -188,8 +189,6 @@ class HomeCard extends Component {
   render(){
     // Material-ui関連
     const { classes } = this.props;
-
-    console.log(this.state);
 
     return (
         <div>

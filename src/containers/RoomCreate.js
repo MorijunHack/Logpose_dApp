@@ -1,23 +1,15 @@
+// React関連
 import React, { Component } from 'react';
+
+// material-ui関連
 import PropTypes from 'prop-types';
-
-import firebase from "firebase/app";
-import 'firebase/firestore';
-
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
-
-import * as waves from '../config/waves-config';
-
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
-
 import TextField from '@material-ui/core/TextField';
-
-import { Redirect } from 'react-router-dom';
-
 import 'date-fns';
 import Grid from '@material-ui/core/Grid';
 import DateFnsUtils from '@date-io/date-fns';
@@ -27,11 +19,14 @@ import {
   KeyboardTimePicker
 } from '@material-ui/pickers';
 
-import { base58Encode, sha256, stringToBytes } from '@waves/ts-lib-crypto'
+// firebase関連
+import firebase from "firebase/app";
+import 'firebase/firestore';
 
-// waves-transactionsの取得
+// waves関連
+import { base58Encode, sha256, stringToBytes } from '@waves/ts-lib-crypto'
+import * as waves from '../config/waves-config';
 import { currentHeight } from '@waves/waves-transactions/dist/nodeInteraction';
-import { Input } from '@material-ui/core';
 
 
 // スタイル
@@ -118,7 +113,6 @@ class RoomCreate extends Component {
     }
 
     handleWhenChange(e) {
-        console.log(this);
         this.setState({
             when: e
         });
@@ -178,12 +172,9 @@ class RoomCreate extends Component {
                     }, payment: [{assetId: "WAVES", tokens: this.state.prize}]
             }
         }).then(async (tx) => {
-            console.log("Signiture Successfull!!");
-
             // txhashを求める
             const res = JSON.parse(tx);
             const txid = res["id"];
-            console.log(txid);
 
             const room = base58Encode(sha256(stringToBytes(roomer + data.title + JSON.stringify(data))));
     
@@ -198,11 +189,9 @@ class RoomCreate extends Component {
                 when: this.state.when
             }
 
-            console.log(firedata);
-
             const db = firebase.firestore().collection('users').doc(firedata.roomerAddress).collection("rooms").doc(firedata.roomKey)
             db.set(firedata).then(function() {
-                alert('Room Created Successfully! Txid:  ' + txid);
+                alert('Room Created Successfully!\nTxid:  ' + txid);
             });
     
             // ステートを戻す

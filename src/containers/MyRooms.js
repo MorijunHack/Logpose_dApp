@@ -1,12 +1,16 @@
+// React関連
 import React, { Component } from 'react';
+
+// material-ui関連
 import PropTypes from 'prop-types';
-
-import firebase from "firebase/app";
-import 'firebase/firestore';
-
 import { withStyles } from '@material-ui/core/styles';
 
+// component呼び出し
 import RoomList from './RoomList';
+
+// firebase関連
+import firebase from "firebase/app";
+import 'firebase/firestore';
 
 
 // スタイル
@@ -54,7 +58,6 @@ class MyRooms extends Component {
                 address: address,
                 invalid: false
               });
-              console.log(address);
 
               const data = [];
 
@@ -66,16 +69,13 @@ class MyRooms extends Component {
                   .get()
                   .then(function(querySnapshot) {
                       querySnapshot.forEach(function(doc) {
-                          console.log(doc.id, " => ", doc.data());
                           data.push(doc.data());
                       });
-                      console.log(data)
                   })
                   .catch(function(error) {
                       console.log("Error getting documents: ", error);
                   });
               this.setState({datas: data});
-              console.log(this.state.datas)
           }catch(error){
               console.error(error);
           }

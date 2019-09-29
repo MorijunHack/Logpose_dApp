@@ -1,15 +1,17 @@
+// React関連
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
+// firebase関連
 import firebase from "firebase/app";
 import 'firebase/firestore';
 
+// material-ui関連
 import { withStyles } from '@material-ui/core/styles';
 
+// component呼び出し
 import HomeList from './HomeList';
 
-import * as waves from '../config/waves-config';
-import { accountDataByKey } from '@waves/waves-transactions/dist/nodeInteraction';
 
 
 // スタイル
@@ -55,16 +57,13 @@ class Home extends Component {
               .get()
               .then(function(querySnapshot) {
                   querySnapshot.forEach(async function(doc) {
-                      console.log(doc.id, " => ", doc.data());
                       data.push(doc.data());
                   });
-                  console.log(data)
               })
               .catch(function(error) {
                   console.log("Error getting documents: ", error);
               });
           this.setState({datas: data});
-          console.log(this.state.datas)
         }catch(error){
             console.error(error);
         }
@@ -76,8 +75,6 @@ class Home extends Component {
     
     // Material-ui関連
     const { classes } = this.props;
-
-    console.log(this.state)
 
     return (
       <div className={classes.root}>

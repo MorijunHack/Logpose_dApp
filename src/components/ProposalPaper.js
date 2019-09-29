@@ -1,16 +1,20 @@
+// React関連
 import React, { Component } from 'react';
+
+// material-ui関連
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-
-import firebase from "firebase/app";
-import 'firebase/firestore';
-
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import { Grid, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio } from '@material-ui/core';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 
+// firebase関連
+import firebase from "firebase/app";
+import 'firebase/firestore';
+
+// waves関連
 import * as waves from '../config/waves-config';
 import { accountDataByKey } from '@waves/waves-transactions/dist/nodeInteraction';
 import { base58Encode, sha256, stringToBytes } from '@waves/ts-lib-crypto';
@@ -70,7 +74,6 @@ const styles = theme => ({
 class ProposalPaper extends Component {
     constructor(props){
         super(props);
-        console.log(this.props.data)
         this.state = {};
 
         this.adoptionFunc = this.adoptionFunc.bind(this);
@@ -78,12 +81,12 @@ class ProposalPaper extends Component {
         this.renderPropose = this.renderPropose.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.adoptionButton = this.adoptionButton.bind(this);
     }
 
     async componentWillMount(){
         let data = await accountDataByKey(this.props.data.proposeKey + "_data", waves.dAppAddress, waves.nodeUrl);
         data = JSON.parse(data.value);
-        console.log(data)
 
         let roomStatus = await accountDataByKey(this.props.data.roomKey + "_status", waves.dAppAddress, waves.nodeUrl);
         data.roomStatus = roomStatus.value;
@@ -114,16 +117,11 @@ class ProposalPaper extends Component {
         if (evaluate !== null) {
             data.evaluate = (JSON.parse(evaluate.value)).evaluate
         }
-
+        
         const average = (total.value / count.value).toFixed(2)
-
         data.average = average;
 
-        console.log(data);
-
         this.setState(data);
-
-        console.log(this.state)
     }
 
     async adoptionFunc() {
@@ -148,37 +146,24 @@ class ProposalPaper extends Component {
                     }, payment: []
             }
         }).then(async (tx) => {
-            console.log("Signiture Successfull!!");
-
             // txhashを求める
             const res = JSON.parse(tx);
             const txid = res["id"];
-            console.log(txid);
-
-            // // adoptionKeyを求める
-            // const adoptionKey = "adoption_" + base58Encode(sha256(stringToBytes(room + propose)));
-
-            // const firedata= {
-            //     status: "adopted",
-            //     winner: this.props.data.contributorAddress, 
-            // }
 
             const fireRoom= {
                 state: "closed", 
             }
-
             const roomer = this.props.data.roomerAddress
 
             const db = firebase.firestore().collection('users').doc(roomer).collection("rooms").doc(room);
             db.update(fireRoom).then(function() {
-                alert('Proposal adopted Successfully! Txid:  ' + txid);
+                alert('Proposal adopted Successfully!\nTxid:  ' + txid);
             });
     
             // ステートを戻す
             this.setState({
                 winner: true
             });
-            console.log(this.state);
         }).catch((error) => {
                 console.error("Something went wrong", error);
         });
@@ -219,7 +204,6 @@ class ProposalPaper extends Component {
                         }, payment: []
                 }
             }).then(async (tx) => {
-                console.log("Signiture Successfull!!");
             }).catch((error) => {
                     console.error("Something went wrong", error);
             });
@@ -378,11 +362,7 @@ class ProposalPaper extends Component {
                         </Grid>
                         
                         {this.state.roomOwner &&
-                            this.state.roomStatus === "open" &&
-                                <Button onClick={this.adoptionFunc} className={classes.btn}>
-                                    <Avatar className={classes.wwwAvatar} src="/images/check.svg"/>
-                                    <b>adoption</b>
-                                </Button>
+                            this.adoptionButton(classes)
                         }
                     </Paper>
                 </div>
@@ -390,16 +370,22 @@ class ProposalPaper extends Component {
         );
     }
 
+    adoptionButton(classes) {
+        if (this.state.roomStatus) {
+            return (
+                <Button onClick={this.adoptionFunc} className={classes.btn}>
+                    <Avatar className={classes.wwwAvatar} src="/images/check.svg"/>
+                    <b>adoption</b>
+                </Button>
+            )
+        }
+    }
+
     render() {
 
         // Material-ui関連
         const { classes } = this.props;
-
-        console.log(this.state);
-        console.log(this.props.data);
-
-        let n = 0;
-
+        
         return (
             <div>
                 {this.state.status === "adopted" ? this.renderWinner(classes) : this.renderPropose(classes)}

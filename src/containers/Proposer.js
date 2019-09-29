@@ -1,26 +1,24 @@
+// React関連
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 
+// material-ui関連
+import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
+import Button from '@material-ui/core/Button';
+import FormControl from '@material-ui/core/FormControl';
+import TextField from '@material-ui/core/TextField';
+import 'date-fns';
+
+// firebase関連
 import firebase from "firebase/app";
 import 'firebase/firestore';
 
-import { withStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import InputLabel from '@material-ui/core/InputLabel';
-import FormControl from '@material-ui/core/FormControl';
-
+// waves関連
 import * as waves from '../config/waves-config';
-
-import TextField from '@material-ui/core/TextField';
-
-import 'date-fns';
-
 import { base58Encode, sha256, stringToBytes } from '@waves/ts-lib-crypto'
-
-// waves-transactionsの取得
 import { currentHeight, accountDataByKey } from '@waves/waves-transactions/dist/nodeInteraction';
 
-
+// component関連
 import RoomInfo from '../components/RoomInfo';
 
 // スタイル
@@ -65,8 +63,6 @@ class Proposer extends Component {
     constructor(props){
         super(props);
         const id = this.props.match.params.id;
-        // id.replace('room/', '').replace('/proposer', '');
-        console.log(id);
 
         this.state = {
             author: false,
@@ -77,8 +73,6 @@ class Proposer extends Component {
             ansDetail: '',
             url: ''
         };
-
-        console.log(this.state);
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
@@ -90,7 +84,6 @@ class Proposer extends Component {
             try {
                 let roomer = await accountDataByKey(this.state.roomKey + "_roomer", waves.dAppAddress, waves.nodeUrl);
                 roomer = roomer.value;
-                console.log(roomer);
 
                 let proposalCount = await accountDataByKey(this.state.roomKey + "_proposals", waves.dAppAddress, waves.nodeUrl);
                 if (proposalCount === null) {
@@ -113,15 +106,12 @@ class Proposer extends Component {
                         proposer: proposer,
                     });
                 }
-                console.log(this.state);
 
             } catch(error) {
                 console.error(error);
             }
         }
         await initState();
-
-        console.log(this);
     }
 
     handleChange(e) {
@@ -132,8 +122,6 @@ class Proposer extends Component {
     }
 
     async handleSubmit() {
-        // e.preventDerault();
-        // console.log(e);
         const { WavesKeeper } = window;
         const now = await currentHeight(waves.nodeUrl);
         
@@ -148,7 +136,6 @@ class Proposer extends Component {
             height: now,
         }
 
-        console.log(data)
         if (this.state.author){
             alert('Author cannot propose your own request');
             this.setState({
@@ -179,12 +166,10 @@ class Proposer extends Component {
                         }, payment: []
                 }
             }).then(async (tx) => {
-                console.log("Signiture Successfull!!");
     
                 // txhashを求める
                 const res = JSON.parse(tx);
                 const txid = res["id"];
-                console.log(txid);
     
                 // proposeKeyを求める
                 const contributor = this.state.proposer;
@@ -201,11 +186,10 @@ class Proposer extends Component {
                     // propose: {title: this.state.ansTitle, detail: this.state.ansDetail, url: this.state.url},
                     created: new Date()
                 }
-                console.log(firedata);
     
                 const db = firebase.firestore().collection('users').doc(firedata.roomerAddress).collection("rooms").doc(firedata.roomKey).collection("proposals").doc(firedata.proposeKey);
                 db.set(firedata).then(function() {
-                    alert('Your Propose has been sent Successfully! Txid:  ' + txid);
+                    alert('Your Propose has been sent Successfully!\nTxid:  ' + txid);
                 });
         
                 // ステートを戻す
@@ -217,7 +201,6 @@ class Proposer extends Component {
                     ansDetail: '',
                     url: ''
                 });
-                console.log(this.state);
             }).catch((error) => {
                     console.error("Something went wrong", error);
             });
@@ -230,8 +213,6 @@ class Proposer extends Component {
     
     // Material-ui関連
     const { classes } = this.props;
-
-    console.log(this.state);
 
     return (
       <div>

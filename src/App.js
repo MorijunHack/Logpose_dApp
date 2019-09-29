@@ -1,8 +1,8 @@
+// React関連
 import React, { Component } from 'react';
 
-// コンテナ読み込み
+// component読み込み
 import ResponsiveDrawer from './containers/ResponsiveDrawer';
-// import Notification from './containers/Notification';
 import Home from './containers/Home';
 import Info from './containers/Info';
 import MyPage from './containers/MyPage';
@@ -11,12 +11,9 @@ import MyRooms from './containers/MyRooms';
 import RoomManage from './containers/RoomManage';
 import Proposer from './containers/Proposer';
 import MyProposals from './containers/MyProposals';
-
-
-// コンポーネント読み込み
 import WrapMainContent from './components/WrapMainContent'
 
-// 共通スタイル読み込み
+// css読み込み
 import './App.css';
 
 // Route関連

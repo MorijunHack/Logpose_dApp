@@ -1,8 +1,13 @@
+// React関連
 import React, { Component } from 'react';
+
+// material-ui関連
 import PropTypes from 'prop-types';
+import { Paper, Typography, withStyles } from '@material-ui/core';
+
+// waves関連
 import { accountDataByKey } from '@waves/waves-transactions/dist/nodeInteraction';
 import { base58Encode, sha256, stringToBytes } from '@waves/ts-lib-crypto';
-import { Paper, Typography, withStyles } from '@material-ui/core';
 import * as waves from '../config/waves-config';
 
 
@@ -38,12 +43,9 @@ class RoomInfo extends Component {
             roomInfo: {},
             roomerInfo: {}
         }
-        console.log(this.props);
     }
 
     componentWillMount(){
-
-        console.log(this.props.roomKey);
 
         const id = this.props.roomKey;
 
@@ -53,7 +55,6 @@ class RoomInfo extends Component {
             try {
                 let roomer = await accountDataByKey(id + "_roomer", waves.dAppAddress, waves.nodeUrl);
                 roomer = roomer.value;
-                console.log(roomer);
 
                 const roomerKey = base58Encode(sha256(stringToBytes(roomer)));
 
@@ -91,25 +92,20 @@ class RoomInfo extends Component {
                 const adoptionRatio = String( Math.floor( 100 * roomerAdoptCount.value / roomerRoomCount.value ) ) + '%';
 
                 let roomData = await accountDataByKey(id + "_data", waves.dAppAddress, waves.nodeUrl);
-                console.log(roomData);
 
                 roomData = JSON.parse(roomData.value);
-                console.log(roomData);
 
                 function fixDateTime(date) {
                     const arr = date.split('');
-                    console.log(arr);
                     let arr2 = [];
                     for (let i = 0; i < 10; i++) {
                         arr2.push(arr[i]);
                     }
-                    console.log(arr2);
 
                     let arr3 = [];
                     for (let j = 11; j < 16; j++) {
                         arr3.push(arr[j])
                     }
-                    console.log(arr3);
 
                     arr2 = arr2.join(',');
                     arr3 = arr3.join(',');
@@ -122,7 +118,6 @@ class RoomInfo extends Component {
 
                 function fixDate(date){
                     const arr = date.split('');
-                    console.log(arr);
                     let arr2 = [];
                     for (let i = 0; i < 10; i++) {
                         arr2.push(arr[i]);
@@ -144,7 +139,6 @@ class RoomInfo extends Component {
                     roomCount: roomerRoomCount.value,
                     adoptionRatio: adoptionRatio,
                 }
-                console.log(roomerData);
 
                 const roomData2 = {
                     city: roomData.city,
@@ -157,22 +151,18 @@ class RoomInfo extends Component {
                     when: fixDate(roomData.when),
                     proposalCount: proposalCount.value
                 }
-                console.log(roomData2);
 
                 this.setState({
                     roomKey: id,
                     roomInfo: roomData2,
                     roomerInfo: roomerData
                 });
-                console.log(this);
 
             } catch(error) {
                 console.error(error);
             }
         }
         initState();
-
-        console.log(this);
     }
 
     render() {

@@ -1,8 +1,11 @@
+// React関連
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
+// waves関連
 import * as waves from '../config/waves-config';
 
+// material-ui関連
 import { withStyles } from '@material-ui/core/styles';
 
 // コンポーネントの準備
@@ -22,7 +25,6 @@ class HomeList extends Component {
 
   constructor(props){
     super(props);
-    console.log(this.props)
     this.renderListItem = this.renderListItem.bind(this);
   }
 
@@ -30,7 +32,6 @@ class HomeList extends Component {
     // dataをblockchainから落とす
     const dataStr = await accountDataByKey(roomKey + "_data", waves.dAppAddress, waves.nodeUrl);
     let data = JSON.parse(dataStr.value);
-    console.log(data);
 
     const status = await accountDataByKey(roomKey + "_status", waves.dAppAddress, waves.nodeUrl);
     data.status = status.value;
@@ -38,18 +39,15 @@ class HomeList extends Component {
     // dataの日付表記を変更
     function fixDateTime(date) {
       const arr = date.split('');
-      console.log(arr);
       let arr2 = [];
       for (let i = 0; i < 10; i++) {
           arr2.push(arr[i]);
       }
-      console.log(arr2);
 
       let arr3 = [];
       for (let j = 11; j < 16; j++) {
           arr3.push(arr[j])
       }
-      console.log(arr3);
 
       arr2 = arr2.join(',');
       arr3 = arr3.join(',');
@@ -62,7 +60,6 @@ class HomeList extends Component {
 
     function fixDate(date){
         const arr = date.split('');
-        console.log(arr);
         let arr2 = [];
         for (let i = 0; i < 10; i++) {
             arr2.push(arr[i]);
@@ -88,8 +85,6 @@ class HomeList extends Component {
     } else {
       data.author = false;
     }
-
-    console.log(data);
 
     return data;
   }

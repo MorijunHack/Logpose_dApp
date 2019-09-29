@@ -1,6 +1,8 @@
+// React関連
 import React from 'react';
-import PropTypes from 'prop-types';
 
+// material-ui関連
+import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';

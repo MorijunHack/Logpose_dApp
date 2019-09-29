@@ -1,12 +1,8 @@
+// React関連
 import React from 'react';
+
+// material-ui周り
 import PropTypes from 'prop-types';
-
-// firestoreまわり
-import firebase from "firebase/app";
-import 'firebase/firestore';
-
-import * as waves from '../config/waves-config';
-
 import { withStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
@@ -18,8 +14,6 @@ import Hidden from '@material-ui/core/Hidden';
 import Divider from '@material-ui/core/Divider';
 import MenuIcon from '@material-ui/icons/Menu';
 import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
-
-// Material-UIアイコン取得
 import InfoIcon from '@material-ui/icons/Info';
 import SearchIcon from '@material-ui/icons/Search';
 import ShareIcon from '@material-ui/icons/Share';
@@ -29,24 +23,25 @@ import AddCircleIcon from '@material-ui/icons/AddCircle';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 import AssistantIcon from '@material-ui/icons/Assistant';
 
+// firestoreまわり
+import firebase from "firebase/app";
+import 'firebase/firestore';
 
 // Route関連
 import { Link } from 'react-router-dom';
 
-// コンテナの準備
+// component呼び出し
 import ShareDialog from '../containers/ShareDialog';
-
-// コンポーネントの準備
 import ResponsiveDrawerListItem from '../components/ResponsiveDrawerListItem';
 
 // wavesの準備
 import { accountDataByKey } from '@waves/waves-transactions/dist/nodeInteraction';
 import { base58Encode, sha256, stringToBytes } from '@waves/ts-lib-crypto';
+import * as waves from '../config/waves-config';
 
 // 設定値
 const drawerWidth = 240;
 const headerNavigationHeight = 56;
-// const bottomNavigationHeight = 56;
 
 const { WavesKeeper } = window;
 
@@ -156,7 +151,6 @@ class ResponsiveDrawer extends React.Component {
 
                 const db = firebase.firestore().collection("users").doc(userAddress);
                 db.set(fireuser).then(function() {
-                  console.log(fireuser)
                 });
             } catch(error) {
                 console.error(error); // displaying the result in the console
@@ -172,7 +166,7 @@ class ResponsiveDrawer extends React.Component {
           /*...processing errors */
       })
     } else {
-        let result = window.confirm('If you wanna use this app, install Waveskeeper!\nhttps://chrome.google.com/webstore/detail/waves-keeper/lpilbniiabackdjcionkobglmddfbcjo');
+        let result = window.confirm('If you wanna use this app, install Waveskeeper!\nYou can learn how to from "about Logpose"');
     }
   }
 
@@ -210,7 +204,6 @@ class ResponsiveDrawer extends React.Component {
     }).then(async (tx) => {
       const res = JSON.parse(tx);
       const txid = res["id"];
-      console.log(txid);
 
       alert('withdraw has done successfully! Txid : ' + txid);
 
@@ -228,7 +221,6 @@ class ResponsiveDrawer extends React.Component {
           const getPublicState = async () => {
             try {
                 const accountState = await WavesKeeper.publicState();
-                console.log(accountState);
                 const userAddress = accountState.account.address;
                 const userName = accountState.account.name;
                 const userBalance = accountState.account.balance.available;

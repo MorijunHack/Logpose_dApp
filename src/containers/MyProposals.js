@@ -1,40 +1,16 @@
+// React関連
 import React, { Component } from 'react';
+
+// material-ui関連
 import PropTypes from 'prop-types';
-
-import firebase from "firebase/app";
-import 'firebase/firestore';
-
 import { withStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import InputLabel from '@material-ui/core/InputLabel';
-import FormControl from '@material-ui/core/FormControl';
 
-import * as waves from '../config/waves-config';
-
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-
-import TextField from '@material-ui/core/TextField';
-
+// component呼び出し
 import ProposalList from './ProposalList';
 
-import 'date-fns';
-import Grid from '@material-ui/core/Grid';
-import DateFnsUtils from '@date-io/date-fns';
-import {
-  MuiPickersUtilsProvider,
-  KeyboardDatePicker,
-  KeyboardTimePicker
-} from '@material-ui/pickers';
-
-import { base58Encode, sha256, stringToBytes } from '@waves/ts-lib-crypto'
-
-// waves-transactionsの取得
-import { currentHeight, accountDataByKey } from '@waves/waves-transactions/dist/nodeInteraction';
-import { Input } from '@material-ui/core';
-
-// import ProposalList from './ProposalList';
-
+// firebase関連
+import firebase from "firebase/app";
+import 'firebase/firestore';
 
 // スタイル
 const styles = theme => ({
@@ -109,8 +85,6 @@ class RoomManage extends Component {
     
     // Material-ui関連
     const { classes } = this.props;
-
-    console.log(this.state);
 
     return (
       <div>
