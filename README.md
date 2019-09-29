@@ -14,6 +14,6 @@
 
 # RIDE CODE
 
-・Logposeのメインコントラクト　https://ide.wavesplatform.com/s/5d8e806743224a002adb563a
+・Logposeのメインコントラクト　https://ide.wavesplatform.com/s/5d90ccd143224a002adb563c
 
-・ブラックリストの摘発用コントラクト　https://ide.wavesplatform.com/s/5d8e808343224a002adb563b
+・ブラックリストの摘発用コントラクト　https://ide.wavesplatform.com/s/5d90ccfe43224a002adb563d
