@@ -1,5 +1,7 @@
 # Logpose
 
+説明スライド　https://docs.google.com/presentation/d/1crWDjyTwlcFlxoRXY4mk58vjrUmetmLlJSrIWeDMByM/edit?usp=sharing
+
 ・旅人と現地民を「親切」「お礼」でつなぐマッチングアプリ。
 
 ・旅人は事前に行きたい地域とやりたいことのカテゴリ、具体的な質問、期限を投稿(createRoom)し、同時にお礼をRoomに預託する。
