@@ -1,6 +1,5 @@
 // React関連
 import React, { Component } from 'react';
-
 // material-ui関連
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
@@ -10,10 +9,8 @@ import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 import Avatar from '@material-ui/core/Avatar';
 import { TableBody, TableRow, TableCell } from '@material-ui/core';
-
 // Route関連
 import { Link } from 'react-router-dom';
-
 // waves関連
 import { base58Encode, sha256, stringToBytes } from '@waves/ts-lib-crypto';
 import { accountDataByKey } from '@waves/waves-transactions/dist/nodeInteraction';
