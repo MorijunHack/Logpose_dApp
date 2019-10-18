@@ -49,8 +49,6 @@ class RoomInfo extends Component {
 
         const id = this.props.roomKey;
 
-        const { WavesKeeper } = window;
-
         const initState = async () => {
             try {
                 let roomer = await accountDataByKey(id + "_roomer", waves.dAppAddress, waves.nodeUrl);

@@ -98,6 +98,7 @@ class HomeList extends Component {
       <div className={classes.root}>
         {this.props.datas.map((data) => {
             const datas =  this.renderListItem(data.roomKey, data.txHash)
+            console.log(datas)
             return  <HomeCard data={datas} roomKey={data.roomKey} txHash={data.txHash} />
         })}
       </div>

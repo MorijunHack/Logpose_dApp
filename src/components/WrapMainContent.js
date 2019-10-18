@@ -28,7 +28,6 @@ const WrapMainContent = (WrappedComponent, options = {}) => {
       return (
         <Scrollbars>
           
-          {/* classNameでwrapperとfooterを指定することで、footer（今回はAdsense）をページ下部に貼り付けることが出来る（見た目用途） */}
           <div className={classes.wrapper}>
           
           

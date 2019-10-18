@@ -109,9 +109,7 @@ class ResponsiveDrawer extends React.Component {
       userAddress: '',
       userBalance: 0,
       isLogin: false,
-      balanceWaves: '',
-      mobileOpen: false,
-      shareDialogOpen: false,
+      balanceWaves: ''
     });
 
     const authData = { data: "Auth on my site" };
@@ -166,7 +164,7 @@ class ResponsiveDrawer extends React.Component {
           /*...processing errors */
       })
     } else {
-        let result = window.confirm('If you wanna use this app, install Waveskeeper!\nYou can learn how to from "about Logpose"');
+        window.confirm('If you wanna use this app, install Waveskeeper!\nYou can learn how to from "about Logpose"');
     }
   }
 

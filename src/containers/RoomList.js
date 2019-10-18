@@ -28,7 +28,7 @@ class RoomList extends Component {
     this.renderListItem = this.renderListItem.bind(this);
   }
 
-  async renderListItem(roomKey, txHash){
+  async renderListItem(roomKey){
     // dataをblockchainから落とす
     const dataStr = await accountDataByKey(roomKey + "_data", waves.dAppAddress, waves.nodeUrl);
     let data = JSON.parse(dataStr.value);
@@ -94,7 +94,7 @@ class RoomList extends Component {
     return (
       <div className={classes.root}>
         {this.props.datas.map((data) => {
-          const datas =  this.renderListItem(data.roomKey, data.txHash)
+          const datas =  this.renderListItem(data.roomKey)
           return  <RoomCard data={datas} roomKey={data.roomKey} txHash={data.txHash} />
         })}
       </div>

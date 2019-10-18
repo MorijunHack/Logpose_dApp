@@ -1,12 +1,12 @@
 // React関連
-import React, { Component } from 'react';
+import * as React from 'react';
 
 // material-ui関連
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
-import { Grid, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio } from '@material-ui/core';
+import { Grid, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio, makeStyles, createStyles } from '@material-ui/core';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 
@@ -20,7 +20,7 @@ import { accountDataByKey } from '@waves/waves-transactions/dist/nodeInteraction
 import { base58Encode, sha256, stringToBytes } from '@waves/ts-lib-crypto';
 
 // スタイル
-const styles = theme => ({
+const styles = makeStyles((theme) => createStyles({
     root: {
         ...theme.mixins.gutters(),
         paddingTop: theme.spacing.unit * 3,
@@ -55,12 +55,6 @@ const styles = theme => ({
         marginBottom: 10,
         textAlign: 'right'
     },
-    wwwAvatar: {
-        margin: 10,
-        backgroundColor: '#6c1df2',
-        padding: 7,
-        boxSizing: 'border-box',
-    },
     button: {
         marginLeft: '40%',
         marginTop: '30px',
@@ -69,29 +63,21 @@ const styles = theme => ({
     btn: {
         marginLeft: '40%'
     }
-  });
+}))
 
-class ProposalPaper extends Component {
-    constructor(props){
-        super(props);
-        this.state = {};
 
-        this.adoptionFunc = this.adoptionFunc.bind(this);
-        this.renderWinner = this.renderWinner.bind(this);
-        this.renderPropose = this.renderPropose.bind(this);
-        this.handleChange = this.handleChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
-        this.adoptionButton = this.adoptionButton.bind(this);
-    }
+const ProposalPaper = props => {
+    const [state, update] = React.useState({})
+    const classes = styles()
 
-    async componentWillMount(){
-        let data = await accountDataByKey(this.props.data.proposeKey + "_data", waves.dAppAddress, waves.nodeUrl);
+    React.useEffect(async () => {
+        let data = await accountDataByKey(props.data.proposeKey + "_data", waves.dAppAddress, waves.nodeUrl);
         data = JSON.parse(data.value);
 
-        let roomStatus = await accountDataByKey(this.props.data.roomKey + "_status", waves.dAppAddress, waves.nodeUrl);
+        let roomStatus = await accountDataByKey(props.data.roomKey + "_status", waves.dAppAddress, waves.nodeUrl);
         data.roomStatus = roomStatus.value;
 
-        const proposerKey = base58Encode(sha256(stringToBytes(this.props.data.contributorAddress)));
+        const proposerKey = base58Encode(sha256(stringToBytes(props.data.contributorAddress)));
         let count = await accountDataByKey(proposerKey + "_evaluateCount", waves.dAppAddress, waves.nodeUrl);
         if (count === null) {
             count = {value: 1}
@@ -101,18 +87,18 @@ class ProposalPaper extends Component {
             total = {value: 0}
         }
 
-        const status = await accountDataByKey(this.props.data.proposeKey + "_status", waves.dAppAddress, waves.nodeUrl);
+        const status = await accountDataByKey(props.data.proposeKey + "_status", waves.dAppAddress, waves.nodeUrl);
         data.status = status.value;
 
         const { WavesKeeper } = window;
         const user = await WavesKeeper.publicState();
-        if (user.account.address === this.props.data.roomerAddress) {
+        if (user.account.address === props.data.roomerAddress) {
             data.roomOwner = true
         } else {
             data.roomOwner = false
         }
 
-        const evaluateKey = "evaluate_" + base58Encode(sha256(stringToBytes(this.props.data.proposeKey + this.props.data.roomKey)));
+        const evaluateKey = "evaluate_" + base58Encode(sha256(stringToBytes(props.data.proposeKey + props.data.roomKey)));
         const evaluate = await accountDataByKey(evaluateKey, waves.dAppAddress, waves.nodeUrl);
         if (evaluate !== null) {
             data.evaluate = (JSON.parse(evaluate.value)).evaluate
@@ -121,69 +107,14 @@ class ProposalPaper extends Component {
         const average = (total.value / count.value).toFixed(2)
         data.average = average;
 
-        this.setState(data);
-    }
+        update(data);
+    }, [props.data.contributorAddress, props.data.proposeKey, props.data.roomKey, props.data.roomerAddress])
 
-    async adoptionFunc() {
-        let room = this.state.room;
-        let propose = this.props.data.proposeKey;
-        const { WavesKeeper } = window;
-
-        WavesKeeper.signAndPublishTransaction({
-            type: 16,
-            data: {
-                fee: {
-                    "tokens": "0.05",
-                    "assetId": "WAVES"
-                },
-                dApp: waves.dAppAddress,
-                call: {
-                        function: 'createAdoption',
-                        args: [
-                            {type: "string", value: room},
-                            {type: "string", value: propose},
-                        ]
-                    }, payment: []
-            }
-        }).then(async (tx) => {
-            // txhashを求める
-            const res = JSON.parse(tx);
-            const txid = res["id"];
-
-            const fireRoom= {
-                state: "closed", 
-            }
-            const roomer = this.props.data.roomerAddress
-
-            const db = firebase.firestore().collection('users').doc(roomer).collection("rooms").doc(room);
-            db.update(fireRoom).then(function() {
-                alert('Proposal adopted Successfully!\nTxid:  ' + txid);
-            });
-    
-            // ステートを戻す
-            this.setState({
-                winner: true
-            });
-        }).catch((error) => {
-                console.error("Something went wrong", error);
-        });
-    }
-
-    handleChange(e){
-        e.preventDefault();
-        this.setState({evaluate: e.target.value})
-    }
-
-    async handleSubmit(){
-        if (this.state.evaluate !== null) {
+    const adoptionFunc = React.useCallback(
+        async () => {
+            let room = state.room;
+            let propose = props.data.proposeKey;
             const { WavesKeeper } = window;
-
-            const data = {
-                propose: this.props.data.proposeKey,
-                room: this.props.data.roomKey,
-                evaluate: this.state.evaluate,
-                created: new Date()
-            }
 
             WavesKeeper.signAndPublishTransaction({
                 type: 16,
@@ -194,23 +125,84 @@ class ProposalPaper extends Component {
                     },
                     dApp: waves.dAppAddress,
                     call: {
-                            function: 'evaluateProposer',
+                            function: 'createAdoption',
                             args: [
-                                {type: "string", value: this.props.data.proposeKey},
-                                {type: "string", value: this.props.data.roomKey},
-                                {type: "integer", value: this.state.evaluate},
-                                {type: "string", value: JSON.stringify(data)},
+                                {type: "string", value: room},
+                                {type: "string", value: propose},
                             ]
                         }, payment: []
                 }
             }).then(async (tx) => {
-            }).catch((error) => {
-                    console.error("Something went wrong", error);
-            });
-        }
-    }
+                // txhashを求める
+                const res = JSON.parse(tx);
+                const txid = res["id"];
 
-    renderWinner(classes){
+                const fireRoom= {
+                    state: "closed", 
+                }
+                const roomer = props.data.roomerAddress
+
+                const db = firebase.firestore().collection('users').doc(roomer).collection("rooms").doc(room);
+                db.update(fireRoom).then(function() {
+                    alert('Proposal adopted Successfully!\nTxid:  ' + txid);
+                });
+        
+                // ステートを戻す
+                update({
+                    winner: true
+                });
+            })
+        },[props.data.proposeKey, props.data.roomerAddress, state.room],
+    )
+
+    const handleChange = React.useCallback(
+        (e) => {
+            e.preventDefault();
+            update({evaluate: e.target.value})
+        },
+        [],
+    )
+
+    const handleSubmit = React.useCallback(
+        async () => {
+            if (state.evaluate !== null) {
+                const { WavesKeeper } = window;
+    
+                const data = {
+                    propose: props.data.proposeKey,
+                    room: props.data.roomKey,
+                    evaluate: state.evaluate,
+                    created: new Date()
+                }
+    
+                WavesKeeper.signAndPublishTransaction({
+                    type: 16,
+                    data: {
+                        fee: {
+                            "tokens": "0.05",
+                            "assetId": "WAVES"
+                        },
+                        dApp: waves.dAppAddress,
+                        call: {
+                                function: 'evaluateProposer',
+                                args: [
+                                    {type: "string", value: props.data.proposeKey},
+                                    {type: "string", value: props.data.roomKey},
+                                    {type: "integer", value: state.evaluate},
+                                    {type: "string", value: JSON.stringify(data)},
+                                ]
+                            }, payment: []
+                    }
+                }).then(async (tx) => {
+                }).catch((error) => {
+                        console.error("Something went wrong", error);
+                });
+            }
+        },
+        [props.data.proposeKey, props.data.roomKey, state.evaluate],
+    )
+
+    function renderWinner(){
         return (
             <div>
                 <div className={classes.textLeft}>
@@ -218,7 +210,7 @@ class ProposalPaper extends Component {
                         <Grid container justify="center">
                             <Avatar src="/images/clown.svg" className={classes.wwwAvatar} />
                             <Typography variant="headline" component="h2" className={classes.top}>
-                                {this.state.title}
+                                {state.title}
                             </Typography>
                         </Grid>
                         <Grid container>
@@ -230,7 +222,7 @@ class ProposalPaper extends Component {
 
                             <Grid sm="9">
                                 <Typography component="p" className={classes.paragraph}>
-                                    {this.state.detail}
+                                    {state.detail}
                                 </Typography>
                             </Grid>
                         </Grid>
@@ -243,7 +235,7 @@ class ProposalPaper extends Component {
                             </Grid>
                             <Grid sm="9">
                                 <Typography component="p" className={classes.paragraph}>
-                                    {this.state.url}
+                                    {state.url}
                                 </Typography>
                             </Grid>
                         </Grid>
@@ -256,16 +248,16 @@ class ProposalPaper extends Component {
                             </Grid>
                             <Grid sm="9">
                                 <Typography component="p" className={classes.paragraph}>
-                                    {this.state.average}
+                                    {state.average}
                                 </Typography>
                             </Grid>
                         </Grid>
                     </Paper>
-                    {this.state.roomOwner &&
+                    {state.roomOwner &&
                         <div>
                             <FormControl component="fieldset" className={classes.evaluate}>
                             <FormLabel component="legend">Evaluate this propose</FormLabel>
-                            <RadioGroup value={this.state.evaluate} onChange={this.handleChange} row>
+                            <RadioGroup value={state.evaluate} onChange={handleChange} row>
                                 <FormControlLabel
                                     value="1"
                                     control={<Radio color="primary" />}
@@ -302,7 +294,7 @@ class ProposalPaper extends Component {
                             variant="contained"
                             color="primary"
                             className={classes.button}
-                            onClick={this.handleSubmit}
+                            onClick={handleSubmit}
                         >
                             Save Changes
                         </Button>
@@ -313,13 +305,13 @@ class ProposalPaper extends Component {
         );
     }
 
-    renderPropose(classes){
+    function renderPropose(){
         return (
             <div>
                 <div className={classes.textLeft}>
                     <Paper className={classes.root} elevation={1}>
                         <Typography variant="headline" component="h2" className={classes.top}>
-                            {this.state.title}
+                            {state.title}
                         </Typography>
                         <Grid container>
                             <Grid sm="3">
@@ -330,7 +322,7 @@ class ProposalPaper extends Component {
 
                             <Grid sm="9">
                                 <Typography component="p" className={classes.paragraph}>
-                                    {this.state.detail}
+                                    {state.detail}
                                 </Typography>
                             </Grid>
                         </Grid>
@@ -343,7 +335,7 @@ class ProposalPaper extends Component {
                             </Grid>
                             <Grid sm="9">
                                 <Typography component="p" className={classes.paragraph}>
-                                    <a href={this.state.url} target="_blank">{this.state.url}</a>
+                                    <a href={state.url} target="_blank" rel="noopener noreferrer">{state.url}</a>
                                 </Typography>
                             </Grid>
                         </Grid>
@@ -356,13 +348,13 @@ class ProposalPaper extends Component {
                             </Grid>
                             <Grid sm="9">
                                 <Typography component="p" className={classes.paragraph}>
-                                    {this.state.average}
+                                    {state.average}
                                 </Typography>
                             </Grid>
                         </Grid>
                         
-                        {this.state.roomOwner &&
-                            this.adoptionButton(classes)
+                        {state.roomOwner &&
+                            adoptionButton(classes)
                         }
                     </Paper>
                 </div>
@@ -370,10 +362,10 @@ class ProposalPaper extends Component {
         );
     }
 
-    adoptionButton(classes) {
-        if (this.state.roomStatus) {
+    function adoptionButton() {
+        if (state.roomStatus) {
             return (
-                <Button onClick={this.adoptionFunc} className={classes.btn}>
+                <Button onClick={adoptionFunc} className={classes.btn}>
                     <Avatar className={classes.wwwAvatar} src="/images/check.svg"/>
                     <b>adoption</b>
                 </Button>
@@ -381,18 +373,14 @@ class ProposalPaper extends Component {
         }
     }
 
-    render() {
+    return (
+        <div>
+            {state.status === "adopted" ? renderWinner() : renderPropose()}
+        </div>
+    );
 
-        // Material-ui関連
-        const { classes } = this.props;
-        
-        return (
-            <div>
-                {this.state.status === "adopted" ? this.renderWinner(classes) : this.renderPropose(classes)}
-            </div>
-        );
-    }
 }
+
 
 ProposalPaper.propTypes = {
     classes: PropTypes.object.isRequired,

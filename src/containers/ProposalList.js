@@ -50,8 +50,6 @@ class ProposalList extends Component {
         // Material-ui関連
         const { classes } = this.props;
 
-        const ddd = this.state
-
         return (
             <div className={classes.root}>
                 {this.state.datas.map((data)=>{

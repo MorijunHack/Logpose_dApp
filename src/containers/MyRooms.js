@@ -48,7 +48,6 @@ class MyRooms extends Component {
 
   componentWillMount(){
       const { WavesKeeper } = window;
-      // const idUrl = this.props.match.params.id;
 
       const initState = async () => {
           try {
@@ -69,6 +68,7 @@ class MyRooms extends Component {
                   .get()
                   .then(function(querySnapshot) {
                       querySnapshot.forEach(function(doc) {
+                        console.log(doc.data())
                           data.push(doc.data());
                       });
                   })

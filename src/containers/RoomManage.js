@@ -280,11 +280,6 @@ class RoomManage extends Component {
     // Material-ui関連
     const { classes } = this.props;
 
-    const fixDatas = async (data) => {
-        const aaa = await data;
-        return aaa
-    }
-
     return (
       <div>
         <h1 className={classes.title}>Request Information</h1>
@@ -419,7 +414,6 @@ class RoomManage extends Component {
                         margin="normal"
                         variant="outlined"
                         type="number"
-                        placeholder="WAVES"
                         disabled="true"
                     />
                     <MuiPickersUtilsProvider utils={DateFnsUtils}>

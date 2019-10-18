@@ -18,7 +18,7 @@ import LocalAtmIcon from '@material-ui/icons/LocalAtm';
 import LocalActivityIcon from '@material-ui/icons/LocalActivity';
 import StarsIcon from '@material-ui/icons/Stars';
 import RateReviewIcon from '@material-ui/icons/RateReview';
-import { Input, FormControl, InputLabel, Select, MenuItem, Button, Typography } from '@material-ui/core';
+import { Input, FormControl, Select, MenuItem, Button, Typography } from '@material-ui/core';
 
 // waves関連
 import * as waves from '../config/waves-config';
